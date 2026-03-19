@@ -1,0 +1,98 @@
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-xl);
+  background: linear-gradient(
+    180deg,
+    rgba(10, 22, 40, 0.95) 0%,
+    rgba(10, 22, 40, 0.8) 70%,
+    rgba(10, 22, 40, 0) 100%
+  );
+  backdrop-filter: blur(8px);
+  z-index: 100;
+}
+
+.logo {
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  transition: color var(--transition-fast);
+}
+
+.logo:hover {
+  color: var(--color-accent-bioluminescent);
+}
+
+.logoAccent {
+  color: var(--color-ocean-turquoise);
+}
+
+.links {
+  display: flex;
+  gap: var(--space-lg);
+  align-items: center;
+}
+
+.link {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.link:hover {
+  color: var(--color-text-primary);
+  background-color: rgba(0, 180, 216, 0.1);
+}
+
+.linkActive {
+  color: var(--color-accent-bioluminescent);
+}
+
+.linkActive:hover {
+  color: var(--color-accent-bioluminescent);
+}
+
+/* Mobile */
+.menuButton {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--color-text-primary);
+  cursor: pointer;
+  padding: var(--space-xs);
+}
+
+@media (max-width: 768px) {
+  .links {
+    display: none;
+  }
+
+  .linksOpen {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    background: rgba(10, 22, 40, 0.98);
+    backdrop-filter: blur(12px);
+    padding: var(--space-lg);
+    gap: var(--space-md);
+  }
+
+  .menuButton {
+    display: block;
+  }
+}
