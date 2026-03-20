@@ -1,5 +1,6 @@
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
+import { Html } from '@react-three/drei'
 import type { Group } from 'three'
 import * as THREE from 'three'
 import type { Project } from '../../data/projects'
@@ -16,6 +17,7 @@ interface ProjectOrbProps {
 const ORB_RADIUS = 0.18
 const HOVER_SCALE = 1.4
 const BASE_SCALE = 1
+const TRAIL_LENGTH = 12
 
 export function ProjectOrb({
   project,
@@ -26,9 +28,17 @@ export function ProjectOrb({
   onSelect,
 }: ProjectOrbProps) {
   const groupRef = useRef<Group>(null)
+  const trailRef = useRef<THREE.InstancedMesh>(null)
   const angleRef = useRef(startAngle)
   const [hovered, setHovered] = useState(false)
   const scaleRef = useRef(BASE_SCALE)
+
+  // Trail position ring buffer
+  const trailPositions = useRef<THREE.Vector3[]>(
+    Array.from({ length: TRAIL_LENGTH }, () => new THREE.Vector3())
+  )
+  const trailIndex = useRef(0)
+  const trailDummy = useMemo(() => new THREE.Object3D(), [])
 
   // Restore cursor on unmount if hovered
   useEffect(() => {
@@ -50,13 +60,35 @@ export function ProjectOrb({
     const target = hovered ? HOVER_SCALE : BASE_SCALE
     scaleRef.current += (target - scaleRef.current) * 0.1
     groupRef.current.scale.setScalar(scaleRef.current)
+
+    // Update trail ring buffer (every other frame for perf)
+    if (trailRef.current) {
+      trailPositions.current[trailIndex.current].set(x, 0, z)
+      trailIndex.current = (trailIndex.current + 1) % TRAIL_LENGTH
+
+      for (let i = 0; i < TRAIL_LENGTH; i++) {
+        const age = (trailIndex.current - i + TRAIL_LENGTH) % TRAIL_LENGTH
+        const opacity = 1 - age / TRAIL_LENGTH
+        const pos = trailPositions.current[i]
+        trailDummy.position.copy(pos)
+        trailDummy.scale.setScalar(opacity * 0.6)
+        trailDummy.updateMatrix()
+        trailRef.current.setMatrixAt(i, trailDummy.matrix)
+      }
+      trailRef.current.instanceMatrix.needsUpdate = true
+    }
   })
 
-  // Pick a color based on project index for variety
   const orbColor = project.featured ? '#00f5d4' : '#f9c74f'
 
   return (
     <group rotation={new THREE.Euler(...orbitTilt)}>
+      {/* Particle trail */}
+      <instancedMesh ref={trailRef} args={[undefined, undefined, TRAIL_LENGTH]}>
+        <sphereGeometry args={[0.04, 6, 6]} />
+        <meshBasicMaterial color={orbColor} transparent opacity={0.35} />
+      </instancedMesh>
+
       <group ref={groupRef}>
         <mesh
           onClick={(e) => {
@@ -93,6 +125,29 @@ export function ProjectOrb({
               side={THREE.DoubleSide}
             />
           </mesh>
+        )}
+        {/* Hover tooltip */}
+        {hovered && (
+          <Html
+            position={[0, 0.35, 0]}
+            center
+            style={{
+              background: 'rgba(10, 22, 40, 0.9)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(0, 180, 216, 0.3)',
+              borderRadius: '8px',
+              padding: '6px 12px',
+              color: '#fefae0',
+              fontFamily: 'Outfit, sans-serif',
+              fontSize: '12px',
+              fontWeight: 500,
+              whiteSpace: 'nowrap',
+              pointerEvents: 'none',
+              userSelect: 'none',
+            }}
+          >
+            {project.title}
+          </Html>
         )}
       </group>
     </group>

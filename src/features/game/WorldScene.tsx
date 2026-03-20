@@ -7,6 +7,10 @@ import { Ocean } from './Ocean'
 import { Mountains } from './Mountains'
 import { PalmTrees } from './PalmTrees'
 import { Player } from './Player'
+import { Surfboard } from './interactables/Surfboard'
+import { Campfire } from './interactables/Campfire'
+import { BeachHut } from './interactables/BeachHut'
+import { TikiSign } from './interactables/TikiSign'
 
 export function WorldScene() {
   return (
@@ -55,6 +59,10 @@ export function WorldScene() {
         <Physics gravity={[0, -9.81, 0]}>
           <Ground />
           <Player />
+          <Surfboard />
+          <Campfire />
+          <BeachHut />
+          <TikiSign />
         </Physics>
       </Suspense>
 
