@@ -24,22 +24,31 @@ export function Player() {
 
   // Keyboard listeners
   useEffect(() => {
+    const isEditable = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement | null
+      return !!t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)
+    }
+
     const onKeyDown = (e: KeyboardEvent) => {
       switch (e.code) {
         case 'KeyW':
         case 'ArrowUp':
+          if (!isEditable(e)) e.preventDefault()
           keysRef.current.forward = true
           break
         case 'KeyS':
         case 'ArrowDown':
+          if (!isEditable(e)) e.preventDefault()
           keysRef.current.backward = true
           break
         case 'KeyA':
         case 'ArrowLeft':
+          if (!isEditable(e)) e.preventDefault()
           keysRef.current.left = true
           break
         case 'KeyD':
         case 'ArrowRight':
+          if (!isEditable(e)) e.preventDefault()
           keysRef.current.right = true
           break
       }
@@ -49,18 +58,22 @@ export function Player() {
       switch (e.code) {
         case 'KeyW':
         case 'ArrowUp':
+          if (!isEditable(e)) e.preventDefault()
           keysRef.current.forward = false
           break
         case 'KeyS':
         case 'ArrowDown':
+          if (!isEditable(e)) e.preventDefault()
           keysRef.current.backward = false
           break
         case 'KeyA':
         case 'ArrowLeft':
+          if (!isEditable(e)) e.preventDefault()
           keysRef.current.left = false
           break
         case 'KeyD':
         case 'ArrowRight':
+          if (!isEditable(e)) e.preventDefault()
           keysRef.current.right = false
           break
       }
@@ -95,10 +108,11 @@ export function Player() {
       moveZ /= len
     }
 
-    // Apply velocity — preserve Y for gravity
+    // Apply velocity — preserve Y for gravity, only wake on input
+    const hasInput = moveX !== 0 || moveZ !== 0
     rigidBodyRef.current.setLinvel(
       { x: moveX * MOVE_SPEED, y: velocity.y, z: moveZ * MOVE_SPEED },
-      true
+      hasInput
     )
 
     // Camera follow — reuse preallocated vectors

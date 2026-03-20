@@ -11,10 +11,13 @@ interface PalmTreeProps {
 function PalmTree({ position, scale = 1, lean = 0 }: PalmTreeProps) {
   const frondGroupRef = useRef<THREE.Group>(null)
 
-  // Precompute random droop values so they're stable across re-renders
+  // Deterministic per-tree droop values — stable across re-renders
   const frondDroops = useMemo(
-    () => Array.from({ length: 7 }, (_, i) => -0.6 - ((i * 7 + 3) % 10) * 0.03),
-    []
+    () => {
+      const seed = Math.abs(position[0] * 13 + position[2] * 7)
+      return Array.from({ length: 7 }, (_, i) => -0.6 - (((i * 7 + seed) % 10) * 0.03))
+    },
+    [position]
   )
 
   // Gentle sway animation

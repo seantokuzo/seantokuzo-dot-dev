@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import * as THREE from 'three'
 
 function createMountainGeometry(
-  peaks: { x: number; z: number; height: number; width: number }[]
+  peaks: { x: number; height: number; width: number }[]
 ) {
   const shape = new THREE.Shape()
 
@@ -39,14 +39,14 @@ export function Mountains() {
   const geometry = useMemo(() => {
     // Ko'olau-inspired peaks — sharp, dramatic, varying heights
     const peaks = [
-      { x: -45, z: 0, height: 22, width: 12 },
-      { x: -32, z: 0, height: 28, width: 10 },
-      { x: -20, z: 0, height: 35, width: 14 },
-      { x: -8, z: 0, height: 30, width: 11 },
-      { x: 5, z: 0, height: 38, width: 13 },
-      { x: 18, z: 0, height: 32, width: 12 },
-      { x: 30, z: 0, height: 26, width: 10 },
-      { x: 42, z: 0, height: 20, width: 11 },
+      { x: -45, height: 22, width: 12 },
+      { x: -32, height: 28, width: 10 },
+      { x: -20, height: 35, width: 14 },
+      { x: -8, height: 30, width: 11 },
+      { x: 5, height: 38, width: 13 },
+      { x: 18, height: 32, width: 12 },
+      { x: 30, height: 26, width: 10 },
+      { x: 42, height: 20, width: 11 },
     ]
     return createMountainGeometry(peaks)
   }, [])
@@ -63,11 +63,12 @@ export function Mountains() {
       </mesh>
 
       {/* Darker back face for depth */}
-      <mesh geometry={geometry} position={[0, 0, -2]}>
+      <mesh geometry={geometry}>
         <meshStandardMaterial
           color="#0f3320"
           roughness={0.9}
           metalness={0}
+          side={THREE.BackSide}
         />
       </mesh>
     </group>
