@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useIsMobile } from '../../hooks/useMediaQuery'
 import { useDeviceCapabilities } from '../../hooks/useDeviceCapabilities'
+import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { AtomScene } from './AtomScene'
 import { ProjectList } from './ProjectList'
 import { ProjectOverlay } from './ProjectOverlay'
@@ -10,6 +11,7 @@ import styles from './AtomPage.module.css'
 type ViewMode = 'atom' | 'list'
 
 export function AtomPage() {
+  useDocumentTitle('Sean Simpson — seantokuzo.dev')
   const isMobile = useIsMobile()
   const { hasWebGL2 } = useDeviceCapabilities()
   const canRender3D = hasWebGL2

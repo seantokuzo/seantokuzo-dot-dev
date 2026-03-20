@@ -1,0 +1,40 @@
+.container {
+  position: absolute;
+  bottom: var(--space-2xl);
+  left: var(--space-xl);
+  z-index: 10;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.joystick {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--color-bg-overlay);
+  border: 2px solid var(--color-turquoise-30);
+  backdrop-filter: blur(4px);
+}
+
+.knob {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--color-accent-bio-60) 0%,
+    var(--color-turquoise-40) 100%
+  );
+  border: 2px solid var(--color-accent-bio-50);
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+  transition: box-shadow var(--transition-fast);
+}
+
+.knobActive {
+  box-shadow: 0 0 12px var(--color-glow-accent);
+}

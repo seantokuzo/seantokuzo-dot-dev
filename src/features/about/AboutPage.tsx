@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
 import { bio, socialLinks } from '../../data/bio'
+import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { skills, skillCategories, type SkillCategory } from '../../data/skills'
 import { experience } from '../../data/experience'
 import { projects } from '../../data/projects'
@@ -163,14 +163,7 @@ function ContactSection() {
 }
 
 export function AboutPage() {
-  useEffect(() => {
-    const previousTitle = document.title
-    document.title = 'About — Sean Simpson | seantokuzo.dev'
-
-    return () => {
-      document.title = previousTitle
-    }
-  }, [])
+  useDocumentTitle('About — Sean Simpson | seantokuzo.dev')
 
   return (
     <div className={styles.page}>

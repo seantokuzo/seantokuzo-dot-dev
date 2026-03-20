@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { createBrowserRouter } from 'react-router'
 import { PageShell } from './components/layout/PageShell'
+import { LoadingScreen } from './components/ui/LoadingScreen'
 
 const AtomPage = lazy(() =>
   import('./features/atom/AtomPage').then((m) => ({ default: m.AtomPage }))
@@ -12,22 +13,6 @@ const AboutPage = lazy(() =>
   import('./features/about/AboutPage').then((m) => ({ default: m.AboutPage }))
 )
 
-function PageLoader() {
-  return (
-    <div
-      style={{
-        minHeight: 'calc(100dvh - var(--nav-height))',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: 'var(--color-text-muted)',
-      }}
-    >
-      Loading...
-    </div>
-  )
-}
-
 export const router = createBrowserRouter([
   {
     element: <PageShell />,
@@ -35,7 +20,7 @@ export const router = createBrowserRouter([
       {
         path: '/',
         element: (
-          <Suspense fallback={<PageLoader />}>
+          <Suspense fallback={<LoadingScreen />}>
             <AtomPage />
           </Suspense>
         ),
@@ -43,7 +28,7 @@ export const router = createBrowserRouter([
       {
         path: '/world',
         element: (
-          <Suspense fallback={<PageLoader />}>
+          <Suspense fallback={<LoadingScreen />}>
             <GamePage />
           </Suspense>
         ),
@@ -51,7 +36,7 @@ export const router = createBrowserRouter([
       {
         path: '/about',
         element: (
-          <Suspense fallback={<PageLoader />}>
+          <Suspense fallback={<LoadingScreen />}>
             <AboutPage />
           </Suspense>
         ),
