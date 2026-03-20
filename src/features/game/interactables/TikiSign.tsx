@@ -22,7 +22,6 @@ export function TikiSign() {
           position={[0, 0, 0.04]}
           center
           distanceFactor={6}
-          style={{ pointerEvents: 'none' }}
         >
           <div className={styles.signText}>ABOUT ME →</div>
         </Html>

@@ -34,11 +34,12 @@ export function ProjectOrb({
   const [hovered, setHovered] = useState(false)
   const scaleRef = useRef(BASE_SCALE)
 
-  // Trail position ring buffer
+  // Trail position ring buffer — filled count tracks initialization
   const trailPositions = useRef<THREE.Vector3[]>(
     Array.from({ length: TRAIL_LENGTH }, () => new THREE.Vector3())
   )
   const trailIndex = useRef(0)
+  const trailFilled = useRef(0)
   const trailDummy = useMemo(() => new THREE.Object3D(), [])
 
   // Restore cursor on unmount if hovered
@@ -66,14 +67,20 @@ export function ProjectOrb({
     if (trailRef.current) {
       trailPositions.current[trailIndex.current].set(x, 0, z)
       trailIndex.current = (trailIndex.current + 1) % TRAIL_LENGTH
+      if (trailFilled.current < TRAIL_LENGTH) trailFilled.current++
 
       for (let i = 0; i < TRAIL_LENGTH; i++) {
-        // Walk backwards from newest (trailIndex - 1) to oldest
-        const bufIdx = (trailIndex.current - 1 - i + TRAIL_LENGTH) % TRAIL_LENGTH
-        const opacity = 1 - i / TRAIL_LENGTH
-        const pos = trailPositions.current[bufIdx]
-        trailDummy.position.copy(pos)
-        trailDummy.scale.setScalar(opacity * 0.6)
+        if (i >= trailFilled.current) {
+          // Not yet filled — hide instance offscreen
+          trailDummy.position.set(0, -999, 0)
+          trailDummy.scale.setScalar(0)
+        } else {
+          const bufIdx = (trailIndex.current - 1 - i + TRAIL_LENGTH) % TRAIL_LENGTH
+          const opacity = 1 - i / TRAIL_LENGTH
+          const pos = trailPositions.current[bufIdx]
+          trailDummy.position.copy(pos)
+          trailDummy.scale.setScalar(opacity * 0.6)
+        }
         trailDummy.updateMatrix()
         trailRef.current.setMatrixAt(i, trailDummy.matrix)
       }
@@ -133,7 +140,6 @@ export function ProjectOrb({
           <Html
             position={[0, 0.35, 0]}
             center
-            style={{ pointerEvents: 'none' }}
           >
             <div className={styles.tooltip}>{project.title}</div>
           </Html>

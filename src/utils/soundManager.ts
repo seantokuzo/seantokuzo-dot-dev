@@ -6,7 +6,9 @@
 
 let ctx: AudioContext | null = null
 let masterGain: GainNode | null = null
-let _muted = localStorage.getItem('sound-muted') === 'true'
+
+let _muted = false
+try { _muted = localStorage.getItem('sound-muted') === 'true' } catch { /* storage unavailable */ }
 
 function getCtx(): AudioContext {
   if (!ctx) {
@@ -16,7 +18,7 @@ function getCtx(): AudioContext {
     masterGain.connect(ctx.destination)
   }
   if (ctx.state === 'suspended') {
-    ctx.resume()
+    void ctx.resume().catch(() => {})
   }
   return ctx
 }
@@ -34,7 +36,7 @@ export function isMuted(): boolean {
 
 export function setMuted(muted: boolean): void {
   _muted = muted
-  localStorage.setItem('sound-muted', String(muted))
+  try { localStorage.setItem('sound-muted', String(muted)) } catch { /* storage unavailable */ }
   if (masterGain) {
     masterGain.gain.setTargetAtTime(muted ? 0 : 0.3, ctx!.currentTime, 0.1)
   }
@@ -106,9 +108,10 @@ let oceanNodes: { source: AudioBufferSourceNode; gain: GainNode } | null = null
 
 /**
  * Start ambient ocean loop. Generated pink-ish noise filtered to sound like surf.
+ * Returns true if ambience was started, false if skipped (muted or already playing).
  */
-export function startOceanAmbience(): void {
-  if (_muted || oceanNodes) return
+export function startOceanAmbience(): boolean {
+  if (_muted || oceanNodes) return false
   const audio = getCtx()
   const master = getMaster()
 
@@ -147,6 +150,7 @@ export function startOceanAmbience(): void {
   source.start()
 
   oceanNodes = { source, gain }
+  return true
 }
 
 /**

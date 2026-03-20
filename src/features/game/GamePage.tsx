@@ -22,8 +22,11 @@ export function GamePage() {
     if (!hasWebGL2) return
 
     const start = () => {
-      startOceanAmbience()
-      window.removeEventListener('click', start)
+      // Only remove listener if ambience actually started
+      // If muted, keep listening so unmuting + clicking later works
+      if (startOceanAmbience()) {
+        window.removeEventListener('click', start)
+      }
     }
     window.addEventListener('click', start)
     return () => {
