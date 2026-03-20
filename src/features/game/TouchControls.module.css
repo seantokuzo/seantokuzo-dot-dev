@@ -13,8 +13,8 @@
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: rgba(10, 22, 40, 0.5);
-  border: 2px solid rgba(0, 180, 216, 0.3);
+  background: var(--color-bg-overlay);
+  border: 2px solid var(--color-turquoise-30);
   backdrop-filter: blur(4px);
 }
 
@@ -25,17 +25,16 @@
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(0, 245, 212, 0.6) 0%,
-    rgba(0, 180, 216, 0.4) 100%
+    var(--color-accent-bio-60) 0%,
+    var(--color-turquoise-40) 100%
   );
-  border: 2px solid rgba(0, 245, 212, 0.5);
+  border: 2px solid var(--color-accent-bio-50);
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
   pointer-events: none;
   transition: box-shadow var(--transition-fast);
 }
 
 .knobActive {
-  box-shadow: 0 0 12px rgba(0, 245, 212, 0.4);
+  box-shadow: 0 0 12px var(--color-glow-accent);
 }

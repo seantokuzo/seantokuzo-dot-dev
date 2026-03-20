@@ -43,6 +43,15 @@
   --color-tag-border: rgba(0, 180, 216, 0.2);
   --color-tag-bg-hover: rgba(0, 180, 216, 0.2);
   --color-tag-border-hover: rgba(0, 180, 216, 0.3);
+  --color-bg-nav: rgba(10, 22, 40, 0.6);
+  --color-bg-nav-solid: rgba(10, 22, 40, 0.92);
+  --color-bg-nav-mobile: rgba(10, 22, 40, 0.98);
+  --color-glow-accent: rgba(0, 245, 212, 0.4);
+  --color-glow-turquoise-subtle: rgba(0, 180, 216, 0.1);
+  --color-accent-bio-60: rgba(0, 245, 212, 0.6);
+  --color-accent-bio-50: rgba(0, 245, 212, 0.5);
+  --color-turquoise-40: rgba(0, 180, 216, 0.4);
+  --color-turquoise-30: rgba(0, 180, 216, 0.3);
 
   /* Spacing Scale */
   --space-xs: 0.25rem;

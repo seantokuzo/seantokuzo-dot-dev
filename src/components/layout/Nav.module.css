@@ -10,9 +10,9 @@
   padding: 0 var(--space-xl);
   background: linear-gradient(
     180deg,
-    rgba(10, 22, 40, 0.6) 0%,
+    var(--color-bg-nav) 0%,
     rgba(10, 22, 40, 0.2) 70%,
-    rgba(10, 22, 40, 0) 100%
+    transparent 100%
   );
   backdrop-filter: blur(4px);
   z-index: 100;
@@ -21,9 +21,9 @@
 }
 
 .navScrolled {
-  background: rgba(10, 22, 40, 0.92);
+  background: var(--color-bg-nav-solid);
   backdrop-filter: blur(16px);
-  box-shadow: 0 1px 0 rgba(0, 180, 216, 0.1);
+  box-shadow: 0 1px 0 var(--color-glow-turquoise-subtle);
 }
 
 .logo {
@@ -62,7 +62,7 @@
 
 .link:hover {
   color: var(--color-text-primary);
-  background-color: rgba(0, 180, 216, 0.1);
+  background-color: var(--color-tag-bg);
 }
 
 .linkActive {
@@ -78,7 +78,7 @@
   height: 2px;
   background: var(--color-accent-bioluminescent);
   border-radius: var(--radius-full);
-  box-shadow: 0 0 6px rgba(0, 245, 212, 0.4);
+  box-shadow: 0 0 6px var(--color-glow-accent);
 }
 
 .linkActive:hover {
@@ -107,7 +107,7 @@
     top: var(--nav-height);
     left: 0;
     right: 0;
-    background: rgba(10, 22, 40, 0.98);
+    background: var(--color-bg-nav-mobile);
     backdrop-filter: blur(12px);
     padding: var(--space-lg);
     gap: var(--space-md);
