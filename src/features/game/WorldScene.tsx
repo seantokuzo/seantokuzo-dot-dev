@@ -51,7 +51,7 @@ export function WorldScene() {
         args={['#87ceeb', '#2d6a4f', 0.3]}
       />
 
-      <Suspense>
+      <Suspense fallback={null}>
         <Physics gravity={[0, -9.81, 0]}>
           <Ground />
           <Player />

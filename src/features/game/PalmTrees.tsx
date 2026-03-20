@@ -11,6 +11,12 @@ interface PalmTreeProps {
 function PalmTree({ position, scale = 1, lean = 0 }: PalmTreeProps) {
   const frondGroupRef = useRef<THREE.Group>(null)
 
+  // Precompute random droop values so they're stable across re-renders
+  const frondDroops = useMemo(
+    () => Array.from({ length: 7 }, (_, i) => -0.6 - ((i * 7 + 3) % 10) * 0.03),
+    []
+  )
+
   // Gentle sway animation
   useFrame((state) => {
     if (!frondGroupRef.current) return
@@ -44,9 +50,8 @@ function PalmTree({ position, scale = 1, lean = 0 }: PalmTreeProps) {
         ref={frondGroupRef}
         position={[lean * 1.5, trunkHeight, 0]}
       >
-        {Array.from({ length: 7 }, (_, i) => {
+        {frondDroops.map((droop, i) => {
           const angle = (i / 7) * Math.PI * 2
-          const droop = -0.6 - Math.random() * 0.3
           return (
             <mesh
               key={i}

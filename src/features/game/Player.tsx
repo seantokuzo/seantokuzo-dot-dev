@@ -1,6 +1,6 @@
 import { useRef, useEffect } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
-import { RigidBody } from '@react-three/rapier'
+import { RigidBody, CapsuleCollider } from '@react-three/rapier'
 import type { RapierRigidBody } from '@react-three/rapier'
 import * as THREE from 'three'
 
@@ -8,9 +8,12 @@ const MOVE_SPEED = 5
 const CAMERA_OFFSET = new THREE.Vector3(0, 8, 15)
 const CAMERA_LOOK_OFFSET = new THREE.Vector3(0, 1, 0)
 
+// Preallocated vectors to avoid GC pressure in frame loop
+const _targetCameraPos = new THREE.Vector3()
+const _targetLookAt = new THREE.Vector3()
+
 export function Player() {
   const rigidBodyRef = useRef<RapierRigidBody>(null)
-  const meshRef = useRef<THREE.Mesh>(null)
   const { camera } = useThree()
   const keysRef = useRef({
     forward: false,
@@ -98,21 +101,21 @@ export function Player() {
       true
     )
 
-    // Camera follow
+    // Camera follow — reuse preallocated vectors
     const pos = rigidBodyRef.current.translation()
-    const targetCameraPos = new THREE.Vector3(
+    _targetCameraPos.set(
       pos.x + CAMERA_OFFSET.x,
       pos.y + CAMERA_OFFSET.y,
       pos.z + CAMERA_OFFSET.z
     )
-    const targetLookAt = new THREE.Vector3(
+    _targetLookAt.set(
       pos.x + CAMERA_LOOK_OFFSET.x,
       pos.y + CAMERA_LOOK_OFFSET.y,
       pos.z + CAMERA_LOOK_OFFSET.z
     )
 
-    camera.position.lerp(targetCameraPos, 5 * delta)
-    camera.lookAt(targetLookAt)
+    camera.position.lerp(_targetCameraPos, 5 * delta)
+    camera.lookAt(_targetLookAt)
   })
 
   return (
@@ -123,9 +126,10 @@ export function Player() {
       enabledRotations={[false, false, false]}
       linearDamping={4}
       mass={1}
-      colliders="ball"
+      colliders={false}
     >
-      <mesh ref={meshRef} castShadow>
+      <CapsuleCollider args={[0.4, 0.3]} />
+      <mesh castShadow>
         <capsuleGeometry args={[0.3, 0.8, 8, 16]} />
         <meshStandardMaterial
           color="#fefae0"

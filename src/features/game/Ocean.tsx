@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
@@ -50,8 +50,6 @@ const fragmentShader = /* glsl */ `
 `
 
 export function Ocean() {
-  const meshRef = useRef<THREE.Mesh>(null)
-
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
@@ -65,7 +63,6 @@ export function Ocean() {
 
   return (
     <mesh
-      ref={meshRef}
       rotation={[-Math.PI / 2, 0, 0]}
       position={[0, -0.3, -30]}
     >
