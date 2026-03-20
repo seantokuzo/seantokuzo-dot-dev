@@ -14,6 +14,7 @@ export function ProjectList({ onSelectProject }: ProjectListProps) {
           <button
             key={project.id}
             className={styles.card}
+            type="button"
             onClick={() => onSelectProject(project)}
           >
             <h3 className={styles.title}>{project.title}</h3>
