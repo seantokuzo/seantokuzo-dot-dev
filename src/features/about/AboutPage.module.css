@@ -194,8 +194,8 @@
 }
 
 .skillTag:hover {
-  background: rgba(0, 180, 216, 0.2);
-  border-color: rgba(0, 180, 216, 0.3);
+  background: var(--color-tag-bg-hover);
+  border-color: var(--color-tag-border-hover);
 }
 
 /* --- Projects --- */
