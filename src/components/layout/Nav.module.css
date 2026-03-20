@@ -85,6 +85,24 @@
   color: var(--color-accent-bioluminescent);
 }
 
+/* Mute toggle */
+.muteButton {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+  display: flex;
+  align-items: center;
+}
+
+.muteButton:hover {
+  color: var(--color-text-primary);
+  background-color: var(--color-tag-bg);
+}
+
 /* Mobile */
 .menuButton {
   display: none;

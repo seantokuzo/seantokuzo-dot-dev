@@ -1,0 +1,14 @@
+.tooltip {
+  background: var(--color-bg-overlay);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  color: var(--color-text-primary);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}

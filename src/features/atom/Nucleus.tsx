@@ -8,12 +8,16 @@ export function Nucleus() {
   const meshRef = useRef<Mesh>(null)
   const materialRef = useRef<ShaderMaterial>(null)
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     if (materialRef.current) {
       materialRef.current.uniforms.uTime.value += delta
     }
     if (meshRef.current) {
       meshRef.current.rotation.y += delta * 0.08
+
+      // Breathe animation — gentle scale pulse
+      const breathe = 1 + Math.sin(state.clock.elapsedTime * 0.8) * 0.03
+      meshRef.current.scale.setScalar(breathe)
     }
   })
 

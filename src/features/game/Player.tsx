@@ -4,6 +4,8 @@ import { RigidBody, CapsuleCollider } from '@react-three/rapier'
 import type { RapierRigidBody } from '@react-three/rapier'
 import * as THREE from 'three'
 import { touchInput } from './touchInput'
+import { useGameStore } from '../../store/useGameStore'
+import { openOverlayWithSound } from './openOverlayWithSound'
 
 const MOVE_SPEED = 5
 const CAMERA_OFFSET = new THREE.Vector3(0, 8, 15)
@@ -80,11 +82,22 @@ export function Player() {
       }
     }
 
+    const onInteract = (e: KeyboardEvent) => {
+      if (e.code === 'KeyE' && !isEditable(e)) {
+        const nearby = useGameStore.getState().nearbyInteractable
+        if (nearby) {
+          openOverlayWithSound(nearby)
+        }
+      }
+    }
+
     window.addEventListener('keydown', onKeyDown)
     window.addEventListener('keyup', onKeyUp)
+    window.addEventListener('keydown', onInteract)
     return () => {
       window.removeEventListener('keydown', onKeyDown)
       window.removeEventListener('keyup', onKeyUp)
+      window.removeEventListener('keydown', onInteract)
     }
   }, [])
 

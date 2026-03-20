@@ -52,3 +52,28 @@
   border-radius: var(--radius-full);
   backdrop-filter: blur(8px);
 }
+
+/* --- Mobile interact button --- */
+.interactButton {
+  position: absolute;
+  bottom: calc(var(--space-xl) + 8rem);
+  right: var(--space-xl);
+  z-index: 15;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  border: 2px solid var(--color-accent-bioluminescent);
+  background: var(--color-bg-overlay);
+  backdrop-filter: blur(8px);
+  color: var(--color-accent-bioluminescent);
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  animation: pulseBtn 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseBtn {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
