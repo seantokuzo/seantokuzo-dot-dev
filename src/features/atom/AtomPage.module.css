@@ -1,18 +1,68 @@
 .page {
+  position: relative;
   min-height: calc(100dvh - var(--nav-height));
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
 }
 
-.placeholder {
+/* --- Controls --- */
+.controls {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.toggle {
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  padding: var(--space-xs) var(--space-md);
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.toggle:hover,
+.toggle.active {
+  border-color: var(--color-ocean-turquoise);
+  box-shadow: var(--shadow-glow-turquoise);
+}
+
+.hint {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+/* --- 3D Canvas Wrapper --- */
+.canvasWrap {
+  position: relative;
+  flex: 1;
+  min-height: calc(100dvh - var(--nav-height));
+}
+
+/* --- Hero Text Overlay --- */
+.heroText {
+  position: absolute;
+  bottom: var(--space-4xl);
+  left: 50%;
+  transform: translateX(-50%);
   text-align: center;
-  padding: var(--space-xl);
+  pointer-events: none;
+  z-index: 5;
 }
 
 .title {
   font-family: var(--font-heading);
-  font-size: var(--text-4xl);
+  font-size: var(--text-5xl);
   background: linear-gradient(
     135deg,
     var(--color-ocean-turquoise),
@@ -21,10 +71,32 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: var(--space-md);
+  margin-bottom: var(--space-sm);
+  white-space: nowrap;
 }
 
 .subtitle {
-  color: var(--color-text-muted);
   font-size: var(--text-lg);
+  color: var(--color-text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .title {
+    font-size: var(--text-3xl);
+  }
+
+  .subtitle {
+    font-size: var(--text-base);
+  }
+
+  .heroText {
+    bottom: var(--space-2xl);
+  }
+
+  .controls {
+    top: var(--space-sm);
+    right: var(--space-sm);
+  }
 }
