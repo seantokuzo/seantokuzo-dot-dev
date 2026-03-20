@@ -1,3 +1,4 @@
+import type React from 'react'
 import { useEffect, useRef, useCallback } from 'react'
 import type { Project } from '../../data/projects'
 import styles from './ProjectOverlay.module.css'
@@ -31,7 +32,7 @@ export function ProjectOverlay({ project, onClose }: ProjectOverlayProps) {
 
   // Trap focus within the card
   const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (e.key !== 'Tab' || !cardRef.current) return
       const focusable = cardRef.current.querySelectorAll<HTMLElement>(
         'a[href], button, [tabindex]:not([tabindex="-1"])'
