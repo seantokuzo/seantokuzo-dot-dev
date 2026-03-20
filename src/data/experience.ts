@@ -1,4 +1,5 @@
 export interface Experience {
+  id: string
   title: string
   company: string
   period: string
@@ -8,6 +9,7 @@ export interface Experience {
 
 export const experience: Experience[] = [
   {
+    id: 'independent-2023',
     title: 'Senior Fullstack Software Engineer',
     company: 'Independent / Contract',
     period: '2023 — Present',

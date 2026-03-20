@@ -52,8 +52,8 @@ function ResumeSection() {
     <section className={styles.section}>
       <h2 className={styles.sectionTitle}>Experience</h2>
       <div className={styles.timeline}>
-        {experience.map((exp, i) => (
-          <div key={i} className={styles.timelineItem}>
+        {experience.map((exp) => (
+          <div key={exp.id} className={styles.timelineItem}>
             <div className={styles.timelinePeriod}>{exp.period}</div>
             <h3 className={styles.timelineTitle}>{exp.title}</h3>
             <div className={styles.timelineCompany}>{exp.company}</div>

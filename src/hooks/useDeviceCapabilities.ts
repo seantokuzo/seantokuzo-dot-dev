@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import { useIsMobile } from './useMediaQuery'
-
-export type QualityTier = 'high' | 'medium' | 'low'
+import type { QualityTier } from '../store/useAppStore'
 
 interface DeviceCapabilities {
   hasWebGL2: boolean
