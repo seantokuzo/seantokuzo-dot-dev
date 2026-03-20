@@ -19,7 +19,7 @@ export function AtomPage() {
   )
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
 
-  const handleSelectProject = useCallback((project: Project | null) => {
+  const handleSelectProject = useCallback((project: Project) => {
     setSelectedProject(project)
   }, [])
 
@@ -48,7 +48,7 @@ export function AtomPage() {
       {/* Main content */}
       {viewMode === 'atom' && canRender3D ? (
         <div className={styles.canvasWrap}>
-          <AtomScene onSelectProject={handleSelectProject} />
+          <AtomScene onSelectProject={handleSelectProject} onClearSelection={handleCloseOverlay} />
           <div className={styles.heroText}>
             <h1 className={styles.title}>Sean Simpson</h1>
             <p className={styles.subtitle}>

@@ -104,15 +104,16 @@ const fragmentShader = /* glsl */ `
   }
 
   void main() {
-    // Fish-eye UV distortion
+    // Fish-eye UV distortion — perturbs noise sampling for lens bulge effect
     vec2 centeredUv = vUv * 2.0 - 1.0;
     float dist = length(centeredUv);
     float fishEye = 1.0 + uFishEyeStrength * dist * dist;
     vec2 distortedUv = centeredUv / fishEye;
     vec2 finalUv = distortedUv * 0.5 + 0.5;
+    vec2 uvOffset = finalUv - vUv;
 
-    // Animate noise coordinates
-    vec3 noiseCoord = vPosition * 2.0 + vec3(uTime * 0.05, uTime * 0.03, uTime * 0.04);
+    // Animate noise coordinates with fish-eye offset
+    vec3 noiseCoord = (vPosition + vec3(uvOffset * 2.0, 0.0)) * 2.0 + vec3(uTime * 0.05, uTime * 0.03, uTime * 0.04);
     float terrain = fbm(noiseCoord);
 
     // Layer the terrain into biomes

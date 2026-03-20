@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import type { Group } from 'three'
 import * as THREE from 'three'
@@ -29,6 +29,13 @@ export function ProjectOrb({
   const angleRef = useRef(startAngle)
   const [hovered, setHovered] = useState(false)
   const scaleRef = useRef(BASE_SCALE)
+
+  // Restore cursor on unmount if hovered
+  useEffect(() => {
+    return () => {
+      document.body.style.cursor = 'auto'
+    }
+  }, [])
 
   useFrame((_, delta) => {
     if (!groupRef.current) return

@@ -19,16 +19,17 @@ const ORBITS: {
 
 interface AtomSceneProps {
   onSelectProject: (project: Project) => void
+  onClearSelection: () => void
 }
 
-export function AtomScene({ onSelectProject }: AtomSceneProps) {
+export function AtomScene({ onSelectProject, onClearSelection }: AtomSceneProps) {
   return (
     <Canvas
       dpr={[1, 2]}
       camera={{ position: [0, 3, 8], fov: 50 }}
       gl={{ antialias: true, alpha: true }}
       style={{ position: 'absolute', inset: 0 }}
-      onPointerMissed={() => onSelectProject(null as unknown as Project)}
+      onPointerMissed={onClearSelection}
     >
       <AdaptiveDpr pixelated />
 
