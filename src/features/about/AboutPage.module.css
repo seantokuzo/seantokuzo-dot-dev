@@ -46,6 +46,19 @@
   padding: var(--space-3xl) 0 var(--space-xl);
 }
 
+.heroContent {
+  display: flex;
+  gap: var(--space-3xl);
+  align-items: flex-start;
+}
+
+.heroText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
 .heroTagline {
   font-family: var(--font-heading);
   font-size: var(--text-4xl);
@@ -81,8 +94,55 @@
   max-width: 720px;
 }
 
+/* --- Avatar --- */
+.avatarWrapper {
+  flex-shrink: 0;
+}
+
+.avatar {
+  width: 160px;
+  height: 160px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(
+    135deg,
+    var(--color-ocean-turquoise),
+    var(--color-tropical-palm)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-glow-turquoise);
+}
+
+.avatarInitials {
+  font-family: var(--font-heading);
+  font-size: var(--text-4xl);
+  font-weight: 700;
+  color: var(--color-ocean-deep);
+  user-select: none;
+}
+
 @media (max-width: 768px) {
+  .heroContent {
+    flex-direction: column-reverse;
+    align-items: center;
+    text-align: center;
+  }
+
   .heroTagline {
+    font-size: var(--text-3xl);
+  }
+
+  .bioParagraph {
+    max-width: none;
+  }
+
+  .avatar {
+    width: 120px;
+    height: 120px;
+  }
+
+  .avatarInitials {
     font-size: var(--text-3xl);
   }
 }
@@ -126,8 +186,8 @@
 .skillTag {
   font-size: var(--text-sm);
   padding: var(--space-xs) var(--space-sm);
-  background: rgba(0, 180, 216, 0.1);
-  border: 1px solid rgba(0, 180, 216, 0.15);
+  background: var(--color-tag-bg);
+  border: 1px solid var(--color-tag-border);
   border-radius: var(--radius-sm);
   color: var(--color-text-primary);
   transition: background-color var(--transition-fast), border-color var(--transition-fast);
@@ -138,7 +198,78 @@
   border-color: rgba(0, 180, 216, 0.3);
 }
 
-/* --- Resume / Experience --- */
+/* --- Projects --- */
+.projectsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-lg);
+}
+
+.projectCard {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base),
+    transform var(--transition-fast);
+}
+
+.projectCard:hover {
+  border-color: var(--color-ocean-turquoise);
+  box-shadow: var(--shadow-glow-turquoise);
+  transform: translateY(-2px);
+}
+
+.projectTitle {
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.projectDescription {
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-secondary);
+  flex: 1;
+}
+
+.projectTech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.techTag {
+  font-size: var(--text-xs);
+  padding: 2px var(--space-sm);
+  background: var(--color-tag-bg);
+  border: 1px solid var(--color-tag-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+}
+
+.projectLinks {
+  display: flex;
+  gap: var(--space-md);
+  padding-top: var(--space-xs);
+}
+
+.projectLink {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-ocean-turquoise);
+  transition: color var(--transition-fast);
+}
+
+.projectLink:hover {
+  color: var(--color-accent-bioluminescent);
+}
+
+/* --- Experience / Timeline --- */
 .timeline {
   display: flex;
   flex-direction: column;
@@ -219,13 +350,18 @@
 }
 
 .timelineHighlight::before {
-  content: '→';
+  content: '\2192';
   position: absolute;
   left: 0;
   color: var(--color-tropical-palm);
 }
 
 /* --- Contact --- */
+.contactIntro {
+  font-size: var(--text-lg);
+  color: var(--color-text-secondary);
+}
+
 .contactGrid {
   display: flex;
   flex-wrap: wrap;
@@ -251,30 +387,4 @@
   box-shadow: var(--shadow-glow-cyan);
   transform: translateY(-2px);
   color: var(--color-accent-bioluminescent);
-}
-
-.resumeButton {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-md) var(--space-xl);
-  background: linear-gradient(
-    135deg,
-    var(--color-ocean-turquoise),
-    var(--color-tropical-palm)
-  );
-  border: none;
-  border-radius: var(--radius-lg);
-  color: var(--color-ocean-deep);
-  font-weight: 600;
-  font-size: var(--text-base);
-  cursor: pointer;
-  transition: transform var(--transition-fast), box-shadow var(--transition-base);
-  text-decoration: none;
-}
-
-.resumeButton:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-glow-turquoise);
-  color: var(--color-ocean-deep);
 }
