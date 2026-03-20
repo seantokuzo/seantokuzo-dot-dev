@@ -7,15 +7,14 @@ import { TouchControls } from './TouchControls'
 import { InteractionPrompt } from './InteractionPrompt'
 import { InteractionOverlay } from './InteractionOverlay'
 import { useGameStore } from '../../store/useGameStore'
-import { startOceanAmbience, stopOceanAmbience, playInteract } from '../../utils/soundManager'
+import { startOceanAmbience, stopOceanAmbience } from '../../utils/soundManager'
+import { openOverlayWithSound } from './openOverlayWithSound'
 import styles from './GamePage.module.css'
 
 export function GamePage() {
   const { hasWebGL2 } = useDeviceCapabilities()
   const isMobile = useIsMobile()
   const nearby = useGameStore((s) => s.nearbyInteractable)
-  const activeOverlay = useGameStore((s) => s.activeOverlay)
-  const openOverlay = useGameStore((s) => s.openOverlay)
   useDocumentTitle('Island World — seantokuzo.dev')
 
   // Start ocean ambience on first click, stop on unmount
@@ -33,11 +32,6 @@ export function GamePage() {
     }
   }, [hasWebGL2])
 
-  // Play sound when an overlay opens
-  useEffect(() => {
-    if (activeOverlay) playInteract()
-  }, [activeOverlay])
-
   if (!hasWebGL2) {
     return (
       <div className={styles.page}>
@@ -52,7 +46,7 @@ export function GamePage() {
   }
 
   const handleMobileInteract = () => {
-    if (nearby) openOverlay(nearby)
+    if (nearby) openOverlayWithSound(nearby)
   }
 
   return (

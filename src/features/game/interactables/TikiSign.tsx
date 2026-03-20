@@ -1,5 +1,6 @@
 import { Html } from '@react-three/drei'
 import { Interactable } from './Interactable'
+import styles from './TikiSign.module.css'
 
 export function TikiSign() {
   return (
@@ -21,17 +22,9 @@ export function TikiSign() {
           position={[0, 0, 0.04]}
           center
           distanceFactor={6}
-          style={{
-            color: '#1a1a2e',
-            fontFamily: 'Outfit, sans-serif',
-            fontWeight: 700,
-            fontSize: '14px',
-            whiteSpace: 'nowrap',
-            pointerEvents: 'none',
-            userSelect: 'none',
-          }}
+          style={{ pointerEvents: 'none' }}
         >
-          ABOUT ME →
+          <div className={styles.signText}>ABOUT ME →</div>
         </Html>
       </group>
 

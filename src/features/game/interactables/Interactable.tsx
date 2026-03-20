@@ -27,11 +27,11 @@ export function Interactable({
         args={sensorSize}
         sensor
         onIntersectionEnter={() => setNearby(id)}
-        onIntersectionExit={() =>
-          useGameStore.setState((s) =>
-            s.nearbyInteractable === id ? { nearbyInteractable: null } : s
-          )
-        }
+        onIntersectionExit={() => {
+          if (useGameStore.getState().nearbyInteractable === id) {
+            useGameStore.getState().setNearbyInteractable(null)
+          }
+        }}
       />
     </RigidBody>
   )

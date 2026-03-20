@@ -1,0 +1,9 @@
+.signText {
+  color: var(--color-volcanic-obsidian);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 14px;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}

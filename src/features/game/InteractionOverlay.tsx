@@ -7,6 +7,13 @@ import { skills, skillCategories, type SkillCategory } from '../../data/skills'
 import { socialLinks } from '../../data/bio'
 import styles from './InteractionOverlay.module.css'
 
+const OVERLAY_LABELS: Record<InteractableId, string> = {
+  surfboard: 'Projects',
+  campfire: 'Skills',
+  'beach-hut': 'Contact',
+  'tiki-sign': 'About',
+}
+
 export function InteractionOverlay() {
   const activeOverlay = useGameStore((s) => s.activeOverlay)
   const closeOverlay = useGameStore((s) => s.closeOverlay)
@@ -59,7 +66,7 @@ export function InteractionOverlay() {
       onClick={closeOverlay}
       role="dialog"
       aria-modal="true"
-      aria-label={`${activeOverlay} details`}
+      aria-label={`${OVERLAY_LABELS[activeOverlay]} details`}
       onKeyDown={handleKeyDown}
     >
       <div

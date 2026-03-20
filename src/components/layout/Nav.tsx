@@ -61,7 +61,10 @@ export function Nav() {
         ))}
         <button
           className={styles.muteButton}
-          onClick={() => setMuted(toggleMute())}
+          onClick={() => {
+            setMuted(toggleMute())
+            setMenuOpen(false)
+          }}
           aria-label={muted ? 'Unmute sounds' : 'Mute sounds'}
           title={muted ? 'Unmute' : 'Mute'}
         >

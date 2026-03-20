@@ -1,8 +1,8 @@
-import { useGameStore } from '../../store/useGameStore'
+import { useGameStore, type InteractableId } from '../../store/useGameStore'
 import { useIsMobile } from '../../hooks/useMediaQuery'
 import styles from './InteractionPrompt.module.css'
 
-const LABELS: Record<string, string> = {
+const LABELS: Record<InteractableId, string> = {
   surfboard: 'Projects',
   campfire: 'Skills',
   'beach-hut': 'Contact',

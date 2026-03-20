@@ -108,7 +108,7 @@ let oceanNodes: { source: AudioBufferSourceNode; gain: GainNode } | null = null
  * Start ambient ocean loop. Generated pink-ish noise filtered to sound like surf.
  */
 export function startOceanAmbience(): void {
-  if (oceanNodes) return
+  if (_muted || oceanNodes) return
   const audio = getCtx()
   const master = getMaster()
 

@@ -4,6 +4,7 @@ import { Html } from '@react-three/drei'
 import type { Group } from 'three'
 import * as THREE from 'three'
 import type { Project } from '../../data/projects'
+import styles from './ProjectOrb.module.css'
 
 interface ProjectOrbProps {
   project: Project
@@ -61,15 +62,16 @@ export function ProjectOrb({
     scaleRef.current += (target - scaleRef.current) * 0.1
     groupRef.current.scale.setScalar(scaleRef.current)
 
-    // Update trail ring buffer (every other frame for perf)
+    // Update trail ring buffer
     if (trailRef.current) {
       trailPositions.current[trailIndex.current].set(x, 0, z)
       trailIndex.current = (trailIndex.current + 1) % TRAIL_LENGTH
 
       for (let i = 0; i < TRAIL_LENGTH; i++) {
-        const age = (trailIndex.current - i + TRAIL_LENGTH) % TRAIL_LENGTH
-        const opacity = 1 - age / TRAIL_LENGTH
-        const pos = trailPositions.current[i]
+        // Walk backwards from newest (trailIndex - 1) to oldest
+        const bufIdx = (trailIndex.current - 1 - i + TRAIL_LENGTH) % TRAIL_LENGTH
+        const opacity = 1 - i / TRAIL_LENGTH
+        const pos = trailPositions.current[bufIdx]
         trailDummy.position.copy(pos)
         trailDummy.scale.setScalar(opacity * 0.6)
         trailDummy.updateMatrix()
@@ -131,22 +133,9 @@ export function ProjectOrb({
           <Html
             position={[0, 0.35, 0]}
             center
-            style={{
-              background: 'rgba(10, 22, 40, 0.9)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid rgba(0, 180, 216, 0.3)',
-              borderRadius: '8px',
-              padding: '6px 12px',
-              color: '#fefae0',
-              fontFamily: 'Outfit, sans-serif',
-              fontSize: '12px',
-              fontWeight: 500,
-              whiteSpace: 'nowrap',
-              pointerEvents: 'none',
-              userSelect: 'none',
-            }}
+            style={{ pointerEvents: 'none' }}
           >
-            {project.title}
+            <div className={styles.tooltip}>{project.title}</div>
           </Html>
         )}
       </group>
