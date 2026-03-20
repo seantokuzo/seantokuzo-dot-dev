@@ -41,6 +41,8 @@
   --color-bg-overlay: rgba(10, 22, 40, 0.85);
   --color-tag-bg: rgba(0, 180, 216, 0.1);
   --color-tag-border: rgba(0, 180, 216, 0.2);
+  --color-tag-bg-hover: rgba(0, 180, 216, 0.2);
+  --color-tag-border-hover: rgba(0, 180, 216, 0.3);
 
   /* Spacing Scale */
   --space-xs: 0.25rem;

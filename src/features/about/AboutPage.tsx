@@ -21,8 +21,12 @@ function BioSection() {
           </div>
         </div>
         <div className={styles.avatarWrapper}>
-          <div className={styles.avatar}>
-            <span className={styles.avatarInitials}>
+          <div
+            className={styles.avatar}
+            role="img"
+            aria-label={`Avatar for ${bio.name}`}
+          >
+            <span className={styles.avatarInitials} aria-hidden="true">
               {bio.name.split(' ').map((n) => n[0]).join('')}
             </span>
           </div>
@@ -85,6 +89,7 @@ function ProjectsSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.projectLink}
+                  aria-label={`View ${project.title} live`}
                 >
                   Live
                 </a>
@@ -95,6 +100,7 @@ function ProjectsSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.projectLink}
+                  aria-label={`Source code for ${project.title}`}
                 >
                   Source
                 </a>
@@ -158,7 +164,12 @@ function ContactSection() {
 
 export function AboutPage() {
   useEffect(() => {
+    const previousTitle = document.title
     document.title = 'About — Sean Simpson | seantokuzo.dev'
+
+    return () => {
+      document.title = previousTitle
+    }
   }, [])
 
   return (
