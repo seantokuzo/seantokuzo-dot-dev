@@ -116,3 +116,9 @@ Before marking any task complete:
 - Don't paste file contents into agent prompts (pass paths instead)
 - Don't skip build verification after changes
 - Don't enable CV features on mobile
+
+---
+
+## Session Handoff
+
+After a PR is merged and the phase is complete, **always save the next-phase prompt** to `.agents/next-phase.md`. This lets the user start a fresh session with `next` (shell alias). The file should contain a ready-to-paste implementation prompt — same format as the phase prompts used throughout this project. Do this automatically without being asked.
