@@ -3,6 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { RigidBody, CapsuleCollider } from '@react-three/rapier'
 import type { RapierRigidBody } from '@react-three/rapier'
 import * as THREE from 'three'
+import { touchInput } from './touchInput'
 
 const MOVE_SPEED = 5
 const CAMERA_OFFSET = new THREE.Vector3(0, 8, 15)
@@ -93,19 +94,27 @@ export function Player() {
     const keys = keysRef.current
     const velocity = rigidBodyRef.current.linvel()
 
-    // Movement direction
+    // Movement direction — keyboard OR touch joystick
     let moveX = 0
     let moveZ = 0
-    if (keys.forward) moveZ -= 1
-    if (keys.backward) moveZ += 1
-    if (keys.left) moveX -= 1
-    if (keys.right) moveX += 1
 
-    // Normalize diagonal movement
-    if (moveX !== 0 && moveZ !== 0) {
-      const len = Math.sqrt(moveX * moveX + moveZ * moveZ)
-      moveX /= len
-      moveZ /= len
+    if (touchInput.x !== 0 || touchInput.z !== 0) {
+      // Touch joystick (already normalized 0..1)
+      moveX = touchInput.x
+      moveZ = touchInput.z
+    } else {
+      // Keyboard
+      if (keys.forward) moveZ -= 1
+      if (keys.backward) moveZ += 1
+      if (keys.left) moveX -= 1
+      if (keys.right) moveX += 1
+
+      // Normalize diagonal movement
+      if (moveX !== 0 && moveZ !== 0) {
+        const len = Math.sqrt(moveX * moveX + moveZ * moveZ)
+        moveX /= len
+        moveZ /= len
+      }
     }
 
     // Apply velocity — preserve Y for gravity, only wake on input

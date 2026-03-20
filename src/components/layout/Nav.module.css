@@ -10,12 +10,20 @@
   padding: 0 var(--space-xl);
   background: linear-gradient(
     180deg,
-    rgba(10, 22, 40, 0.95) 0%,
-    rgba(10, 22, 40, 0.8) 70%,
+    rgba(10, 22, 40, 0.6) 0%,
+    rgba(10, 22, 40, 0.2) 70%,
     rgba(10, 22, 40, 0) 100%
   );
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(4px);
   z-index: 100;
+  transition: background var(--transition-base), backdrop-filter var(--transition-base),
+    box-shadow var(--transition-base);
+}
+
+.navScrolled {
+  background: rgba(10, 22, 40, 0.92);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 rgba(0, 180, 216, 0.1);
 }
 
 .logo {
@@ -41,6 +49,7 @@
 }
 
 .link {
+  position: relative;
   font-size: var(--text-sm);
   font-weight: 500;
   color: var(--color-text-muted);
@@ -58,6 +67,18 @@
 
 .linkActive {
   color: var(--color-accent-bioluminescent);
+}
+
+.linkActive::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: var(--space-sm);
+  right: var(--space-sm);
+  height: 2px;
+  background: var(--color-accent-bioluminescent);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 6px rgba(0, 245, 212, 0.4);
 }
 
 .linkActive:hover {
@@ -90,6 +111,10 @@
     backdrop-filter: blur(12px);
     padding: var(--space-lg);
     gap: var(--space-md);
+  }
+
+  .linkActive::after {
+    display: none;
   }
 
   .menuButton {

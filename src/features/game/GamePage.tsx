@@ -1,18 +1,14 @@
-import { useEffect } from 'react'
 import { useDeviceCapabilities } from '../../hooks/useDeviceCapabilities'
+import { useDocumentTitle } from '../../hooks/useDocumentTitle'
+import { useIsMobile } from '../../hooks/useMediaQuery'
 import { WorldScene } from './WorldScene'
+import { TouchControls } from './TouchControls'
 import styles from './GamePage.module.css'
 
 export function GamePage() {
   const { hasWebGL2 } = useDeviceCapabilities()
-
-  useEffect(() => {
-    const previousTitle = document.title
-    document.title = 'Island World — seantokuzo.dev'
-    return () => {
-      document.title = previousTitle
-    }
-  }, [])
+  const isMobile = useIsMobile()
+  useDocumentTitle('Island World — seantokuzo.dev')
 
   if (!hasWebGL2) {
     return (
@@ -30,9 +26,13 @@ export function GamePage() {
   return (
     <div className={styles.page}>
       <WorldScene />
-      <div className={styles.controls}>
-        <span className={styles.controlHint}>WASD / Arrows to explore</span>
-      </div>
+      {isMobile ? (
+        <TouchControls />
+      ) : (
+        <div className={styles.controls}>
+          <span className={styles.controlHint}>WASD / Arrows to explore</span>
+        </div>
+      )}
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { NavLink } from 'react-router'
 import styles from './Nav.module.css'
 
@@ -10,9 +10,19 @@ const navItems = [
 
 export function Nav() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  const onScroll = useCallback(() => {
+    setScrolled(window.scrollY > 20)
+  }, [])
+
+  useEffect(() => {
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [onScroll])
 
   return (
-    <nav className={styles.nav}>
+    <nav className={`${styles.nav} ${scrolled ? styles.navScrolled : ''}`}>
       <NavLink to="/" className={styles.logo}>
         sean<span className={styles.logoAccent}>tokuzo</span>
       </NavLink>
@@ -37,6 +47,7 @@ export function Nav() {
           <NavLink
             key={to}
             to={to}
+            end={to === '/'}
             className={({ isActive }) =>
               `${styles.link} ${isActive ? styles.linkActive : ''}`
             }
