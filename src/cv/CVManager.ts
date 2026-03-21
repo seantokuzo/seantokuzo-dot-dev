@@ -2,7 +2,6 @@ import { HandTracker } from './HandTracker'
 import { FaceTracker } from './FaceTracker'
 import { useCVStore } from '../store/useCVStore'
 
-const HAND_INTERVAL = 1000 / 15  // 15fps
 const CAMERA_WIDTH = 320
 const CAMERA_HEIGHT = 240
 
@@ -17,8 +16,7 @@ export class CVManager {
   private faceTracker = new FaceTracker()
   private stream: MediaStream | null = null
   private video: HTMLVideoElement | null = null
-  private handTimer: ReturnType<typeof setInterval> | null = null
-  private faceTimer: ReturnType<typeof setInterval> | null = null
+  private timer: ReturnType<typeof setInterval> | null = null
   private onFrame: FrameCallback | null = null
 
   /**
@@ -63,51 +61,48 @@ export class CVManager {
    * Start processing frames. Alternates between hand and face detection.
    * Callback receives hand landmarks for overlay drawing.
    */
+  /**
+   * Start processing frames at 25fps total tick rate.
+   * Hand runs 3 of every 5 ticks (~15fps), face runs 2 of every 5 ticks (~10fps).
+   * Never both in the same frame.
+   */
   startTracking(onFrame?: FrameCallback): void {
     if (!this.video) return
     this.onFrame = onFrame ?? null
 
-    let isHandFrame = true
+    // 25fps tick rate = 40ms interval
+    // Pattern over 5 ticks: H, H, F, H, F → 3 hand (15fps) + 2 face (10fps)
+    const TICK_INTERVAL = 1000 / 25
+    const pattern: ('hand' | 'face')[] = ['hand', 'hand', 'face', 'hand', 'face']
+    let tickCount = 0
 
-    // Interleaved scheduling: hand frames at 15fps, face frames at 10fps
-    // Never both in same frame — use a single timer at hand rate,
-    // process face every ~3rd frame (15/10 ≈ 1.5, so every other)
-    let frameCount = 0
-
-    this.handTimer = setInterval(() => {
+    this.timer = setInterval(() => {
       if (!this.video || this.video.readyState < 2) return
 
       const timestamp = performance.now()
+      const mode = pattern[tickCount % pattern.length]
 
-      if (isHandFrame) {
-        // Hand detection + get landmarks for drawing
+      if (mode === 'hand') {
         const landmarks = this.handTracker.detectWithLandmarks(
           this.video!,
           timestamp
         )
         if (this.onFrame) this.onFrame(landmarks)
       } else {
-        // Face detection (no visual overlay needed)
         this.faceTracker.detect(this.video!, timestamp)
       }
 
-      frameCount++
-      // Process face roughly every 3rd frame to achieve ~10fps from 15fps timer
-      isHandFrame = frameCount % 3 !== 0
-    }, HAND_INTERVAL)
+      tickCount++
+    }, TICK_INTERVAL)
   }
 
   /**
    * Stop tracking but keep camera alive.
    */
   stopTracking(): void {
-    if (this.handTimer) {
-      clearInterval(this.handTimer)
-      this.handTimer = null
-    }
-    if (this.faceTimer) {
-      clearInterval(this.faceTimer)
-      this.faceTimer = null
+    if (this.timer) {
+      clearInterval(this.timer)
+      this.timer = null
     }
     this.onFrame = null
     useCVStore.getState().setGesture('none')

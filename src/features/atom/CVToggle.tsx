@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useCVStore } from '../../store/useCVStore'
 import { CVManager } from '../../cv/CVManager'
 import { CameraPreview, type CameraPreviewHandle } from '../../cv/CameraPreview'
@@ -49,6 +49,14 @@ export function CVToggle() {
     setVideo(null)
     setCVEnabled(false)
   }, [setCVEnabled])
+
+  // Cleanup on unmount — release camera and stop tracking
+  useEffect(() => {
+    return () => {
+      managerRef.current?.dispose()
+      managerRef.current = null
+    }
+  }, [])
 
   return (
     <>

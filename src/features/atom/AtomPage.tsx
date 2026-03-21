@@ -37,7 +37,7 @@ export function AtomPage() {
     () => ({
       onPauseOrbit: setOrbitPaused,
     }),
-    []
+    [setOrbitPaused]
   )
   useGestureControls(gestureOptions)
 

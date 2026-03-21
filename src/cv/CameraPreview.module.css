@@ -23,7 +23,7 @@
   left: 0;
   right: 0;
   padding: var(--space-xs) var(--space-sm);
-  background: rgba(10, 22, 40, 0.85);
+  background: var(--color-bg-overlay);
   backdrop-filter: blur(4px);
   color: var(--color-accent-bioluminescent);
   font-family: var(--font-primary);

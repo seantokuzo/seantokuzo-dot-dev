@@ -1,12 +1,9 @@
 import { useEffect, useRef } from 'react'
 import { useCVStore, type Gesture } from '../store/useCVStore'
-import type { Project } from '../data/projects'
 
 interface GestureControlsOptions {
-  onSelectProject?: (project: Project | null) => void
   onPauseOrbit?: (paused: boolean) => void
   onCycleShell?: (direction: 'next' | 'prev') => void
-  onPointMove?: (x: number, y: number) => void
 }
 
 /**
@@ -17,21 +14,21 @@ export function useGestureControls(options: GestureControlsOptions): void {
   const gesture = useCVStore((s) => s.gesture)
   const isCVEnabled = useCVStore((s) => s.isCVEnabled)
   const lastGestureRef = useRef<Gesture>('none')
+  const orbitPausedRef = useRef(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     if (!isCVEnabled) return
 
-    // Debounce gesture changes — require 100ms stability
     if (debounceRef.current) clearTimeout(debounceRef.current)
 
     debounceRef.current = setTimeout(() => {
       if (gesture === lastGestureRef.current) return
-      const prev = lastGestureRef.current
       lastGestureRef.current = gesture
 
       switch (gesture) {
         case 'open-palm':
+          orbitPausedRef.current = true
           options.onPauseOrbit?.(true)
           break
         case 'swipe-left':
@@ -41,8 +38,9 @@ export function useGestureControls(options: GestureControlsOptions): void {
           options.onCycleShell?.('next')
           break
         case 'none':
-          // Resume orbit when hand is removed after open-palm
-          if (prev === 'open-palm') {
+          // Resume orbit when hand is removed, regardless of prior gesture
+          if (orbitPausedRef.current) {
+            orbitPausedRef.current = false
             options.onPauseOrbit?.(false)
           }
           break
