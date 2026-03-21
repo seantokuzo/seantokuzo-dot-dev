@@ -20,9 +20,10 @@ const ORBITS: {
 interface AtomSceneProps {
   onSelectProject: (project: Project) => void
   onClearSelection: () => void
+  orbitPaused?: boolean
 }
 
-export function AtomScene({ onSelectProject, onClearSelection }: AtomSceneProps) {
+export function AtomScene({ onSelectProject, onClearSelection, orbitPaused = false }: AtomSceneProps) {
   return (
     <Canvas
       dpr={[1, 2]}
@@ -78,7 +79,7 @@ export function AtomScene({ onSelectProject, onClearSelection }: AtomSceneProps)
         enableZoom={true}
         minDistance={4}
         maxDistance={14}
-        autoRotate
+        autoRotate={!orbitPaused}
         autoRotateSpeed={0.5}
       />
     </Canvas>

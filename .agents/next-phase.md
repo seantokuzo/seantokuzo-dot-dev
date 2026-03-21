@@ -1,28 +1,24 @@
-Implement Phase 7: Computer Vision Controls. The site has 6 phases shipped (foundation, 3D atom
-home, about page, tropical beach world, polish pass, interactive experiences). Now it's time to
-bring the computer vision features to life. Here's what needs work:
+Implement Phase 8: Final Polish & Launch Prep. The site has 7 phases shipped (foundation, 3D atom
+home, about page, tropical beach world, polish pass, interactive experiences, computer vision).
+Time to get this production-ready. Here's what needs work:
 
-▎ 1. MediaPipe Hand Tracking — Wire up @mediapipe/tasks-vision HandLandmarker to the webcam.
-Create a `HandTracker` class in `src/cv/` that processes frames at 15fps, detects hand landmarks,
-and maps them to gestures: pinch (select/click), point (cursor control), open-palm (stop/pause),
-swipe-left/swipe-right (navigate). Push gesture state to `useCVStore`.
+▎ 1. SEO & Meta Tags — Add proper Open Graph images (generate an OG card from the atom scene),
+structured data (JSON-LD Person schema), canonical URLs, and a sitemap.xml. Make sure each
+page has unique title, description, and OG tags.
 
-▎ 2. MediaPipe Face Tracking — Create a `FaceTracker` class in `src/cv/` using FaceLandmarker
-at 10fps. Detect blink, wink-left, wink-right, and smile actions. Push face action state to
-`useCVStore`. Never process hand AND face in the same frame.
+▎ 2. Performance Audit — Run Lighthouse on all 3 pages. Optimize: preload critical fonts,
+add resource hints for MediaPipe CDN, lazy-load heavy components more aggressively, add
+loading states for all async operations. Target 90+ on all Lighthouse categories.
 
-▎ 3. Gesture-to-Action Mapping (Atom Page) — On the home page, map gestures to atom controls:
-pinch to select a project orb, point to move the camera angle, open-palm to pause orbit rotation,
-swipe to cycle between orbital shells.
+▎ 3. Accessibility Audit — Keyboard navigation through all pages, screen reader testing,
+ARIA labels on all interactive elements, focus management on overlays, reduced motion
+support (`prefers-reduced-motion` to disable animations/3D).
 
-▎ 4. Camera Permission Flow — Build a progressive enhancement flow: detect camera capability,
-request permission with clear UX, show camera preview with landmark overlay, graceful degradation
-when denied. Desktop only — never enable CV on mobile.
+▎ 4. Error Boundaries — Add React error boundaries around each heavy feature (R3F scenes,
+CV system) with graceful fallback UIs. No blank screens on crash.
 
-▎ 5. CV Toggle UI — Add a camera/CV toggle button near the view mode toggle on the atom page.
-When enabled, show a small camera preview in the corner with hand/face landmarks overlaid.
-When disabled, all CV processing stops and camera releases.
+▎ 5. Analytics & Monitoring — Add lightweight analytics (Plausible or similar privacy-first
+solution). Track page views, CV feature usage, and world page interaction events.
 
-▎ Branch: phase-7/computer-vision. The stores (useCVStore) and hooks (useDeviceCapabilities)
-already exist — build on them. Keep CV processing budget-conscious: 320x240 camera, 15fps hands,
-10fps face, never both in same frame.
+▎ Branch: phase-8/launch-prep. This is the final phase before launch. Everything should be
+bulletproof.
