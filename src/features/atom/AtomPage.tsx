@@ -1,10 +1,12 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useIsMobile } from '../../hooks/useMediaQuery'
 import { useDeviceCapabilities } from '../../hooks/useDeviceCapabilities'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
+import { useGestureControls } from '../../hooks/useGestureControls'
 import { AtomScene } from './AtomScene'
 import { ProjectList } from './ProjectList'
 import { ProjectOverlay } from './ProjectOverlay'
+import { CVToggle } from './CVToggle'
 import type { Project } from '../../data/projects'
 import styles from './AtomPage.module.css'
 
@@ -13,13 +15,14 @@ type ViewMode = 'atom' | 'list'
 export function AtomPage() {
   useDocumentTitle('Sean Simpson — seantokuzo.dev')
   const isMobile = useIsMobile()
-  const { hasWebGL2 } = useDeviceCapabilities()
+  const { hasWebGL2, hasCamera } = useDeviceCapabilities()
   const canRender3D = hasWebGL2
 
   const [viewMode, setViewMode] = useState<ViewMode>(
     canRender3D ? 'atom' : 'list'
   )
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
+  const [orbitPaused, setOrbitPaused] = useState(false)
 
   const handleSelectProject = useCallback((project: Project) => {
     setSelectedProject(project)
@@ -29,9 +32,18 @@ export function AtomPage() {
     setSelectedProject(null)
   }, [])
 
+  // CV gesture controls — desktop only, 3D view only
+  const gestureOptions = useMemo(
+    () => ({
+      onPauseOrbit: setOrbitPaused,
+    }),
+    []
+  )
+  useGestureControls(gestureOptions)
+
   return (
     <div className={styles.page}>
-      {/* View toggle */}
+      {/* View toggle + CV toggle */}
       <div className={styles.controls}>
         {canRender3D && (
           <button
@@ -42,6 +54,9 @@ export function AtomPage() {
             {viewMode === 'atom' ? '☰ List View' : '⚛ 3D View'}
           </button>
         )}
+        {!isMobile && canRender3D && viewMode === 'atom' && hasCamera && (
+          <CVToggle />
+        )}
         {isMobile && viewMode === 'atom' && (
           <span className={styles.hint}>Pinch to zoom · Drag to rotate</span>
         )}
@@ -50,7 +65,7 @@ export function AtomPage() {
       {/* Main content */}
       {viewMode === 'atom' && canRender3D ? (
         <div className={styles.canvasWrap}>
-          <AtomScene onSelectProject={handleSelectProject} onClearSelection={handleCloseOverlay} />
+          <AtomScene onSelectProject={handleSelectProject} onClearSelection={handleCloseOverlay} orbitPaused={orbitPaused} />
           <div className={styles.heroText}>
             <h1 className={styles.title}>Sean Simpson</h1>
             <p className={styles.subtitle}>
