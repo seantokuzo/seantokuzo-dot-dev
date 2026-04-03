@@ -4,7 +4,9 @@ import { Html } from '@react-three/drei'
 import type { Group } from 'three'
 import * as THREE from 'three'
 import type { Project } from '../../data/projects'
+import { ProjectCard } from './ProjectCard'
 import { SIMPLEX_NOISE_3D } from './noiseGlsl'
+import type { FocusPhase } from './CameraController'
 import styles from './ProjectOrb.module.css'
 
 interface ProjectOrbProps {
@@ -14,6 +16,12 @@ interface ProjectOrbProps {
   speed: number
   startAngle: number
   onSelect: (project: Project) => void
+  selectedProjectId: string | null
+  focusPhase: FocusPhase
+  focusTargetRef: MutableRefObject<THREE.Vector3>
+  onRequestClose: () => void
+  onCardExitComplete: () => void
+  isMobile?: boolean
 }
 
 const ORB_RADIUS = 0.18
@@ -74,6 +82,12 @@ export function ProjectOrb({
   speed,
   startAngle,
   onSelect,
+  selectedProjectId,
+  focusPhase,
+  focusTargetRef,
+  onRequestClose,
+  onCardExitComplete,
+  isMobile = false,
 }: ProjectOrbProps) {
   const groupRef = useRef<Group>(null)
   const trailRef = useRef<THREE.InstancedMesh>(null)
@@ -84,6 +98,9 @@ export function ProjectOrb({
   const displaceRef = useRef(0)
   const orbShaderRef = useRef<{ uniforms: Record<string, { value: number }> } | null>(null)
 
+  const isSelected = selectedProjectId === project.id
+  const showCard = isSelected && (focusPhase === 'focused' || focusPhase === 'card-exit')
+  const cardExiting = isSelected && focusPhase === 'card-exit'
   const isHighlighted = hovered || focused
 
   const tiltEuler = useMemo(() => new THREE.Euler(...orbitTilt), [orbitTilt])
@@ -95,7 +112,7 @@ export function ProjectOrb({
   const trailFilled = useRef(0)
   const trailDummy = useMemo(() => new THREE.Object3D(), [])
 
-  const orbColor = project.featured ? '#00f5d4' : '#f9c74f'
+  const orbColor = project.color
 
   // Create material imperatively with onBeforeCompile pre-wired
   const orbMatRef = useRef<THREE.MeshStandardMaterial | null>(null)
@@ -119,6 +136,11 @@ export function ProjectOrb({
     const z = Math.sin(angleRef.current) * orbitRadius
     groupRef.current.position.set(x, 0, z)
 
+    // Write world position for camera tracking when this orb is selected
+    if (isSelected) {
+      groupRef.current.getWorldPosition(focusTargetRef.current)
+    }
+
     const target = isHighlighted ? HOVER_SCALE : BASE_SCALE
     scaleRef.current += (target - scaleRef.current) * 0.1
     groupRef.current.scale.setScalar(scaleRef.current)
@@ -132,7 +154,7 @@ export function ProjectOrb({
       orbShaderRef.current.uniforms.uTime.value = state.clock.elapsedTime
     }
 
-    // Update emissive intensity (was a JSX prop, now imperative)
+    // Update emissive intensity
     if (orbMatRef.current) {
       orbMatRef.current.emissiveIntensity = isHighlighted ? 0.8 : 0.3
     }
@@ -169,7 +191,6 @@ export function ProjectOrb({
 
       <group ref={groupRef}>
         <mesh
-          castShadow
           material={orbMatRef.current!}
           onClick={(e) => {
             e.stopPropagation()
@@ -196,34 +217,52 @@ export function ProjectOrb({
             side={THREE.DoubleSide}
           />
         </mesh>
-        <Html position={[0.35, 0.15, 0]} center={false}>
-          <button
-            type="button"
-            className={`${styles.telemetryLabel} ${isHighlighted ? styles.hovered : ''}`}
-            onClick={() => onSelect(project)}
-            onPointerEnter={() => {
-              setHovered(true)
-              document.body.style.cursor = 'pointer'
-            }}
-            onPointerLeave={() => {
-              setHovered(false)
-              document.body.style.cursor = 'auto'
-            }}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
-            aria-label={`View ${project.title}${project.featured ? ' (featured project)' : ''}`}
-          >
-            <span className={styles.labelLine} style={{ borderColor: orbColor }} />
-            <span className={styles.labelText} style={{ color: orbColor }}>
-              {project.title}
-            </span>
-            {project.featured && (
-              <span className={styles.featuredTag} style={{ color: orbColor }}>
-                FT
+
+        {/* Telemetry label — hidden when project card is visible */}
+        {!showCard && (
+          <Html position={[0.35, 0.15, 0]} center={false}>
+            <button
+              type="button"
+              className={`${styles.telemetryLabel} ${isHighlighted ? styles.hovered : ''}`}
+              onClick={() => onSelect(project)}
+              onPointerEnter={() => {
+                setHovered(true)
+                document.body.style.cursor = 'pointer'
+              }}
+              onPointerLeave={() => {
+                setHovered(false)
+                document.body.style.cursor = 'auto'
+              }}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
+              aria-label={`View ${project.title}${project.featured ? ' (featured project)' : ''}`}
+            >
+              <span className={styles.labelLine} style={{ borderColor: orbColor }} />
+              <span className={styles.labelText} style={{ color: orbColor }}>
+                {project.title}
               </span>
-            )}
-          </button>
-        </Html>
+              {project.featured && (
+                <span className={styles.featuredTag} style={{ color: orbColor }}>
+                  FT
+                </span>
+              )}
+            </button>
+          </Html>
+        )}
+
+        {/* In-scene project card — appears after camera zoom-in completes */}
+        {showCard && (
+          <Html center>
+            <div style={isMobile ? { transform: 'translateY(80%)' } : undefined}>
+              <ProjectCard
+                project={project}
+                exiting={cardExiting}
+                onClose={onRequestClose}
+                onExitComplete={onCardExitComplete}
+              />
+            </div>
+          </Html>
+        )}
       </group>
     </group>
   )

@@ -8,6 +8,7 @@ export interface Project {
   github?: string
   image?: string
   featured: boolean
+  color: string
 }
 
 export const projects: Project[] = [
@@ -22,6 +23,7 @@ export const projects: Project[] = [
     url: 'https://seantokuzo.dev',
     github: 'https://github.com/seantokuzo/seantokuzo-dot-dev',
     featured: true,
+    color: '#c084fc',
   },
   {
     id: 'cv-gesture-engine',
@@ -32,6 +34,7 @@ export const projects: Project[] = [
       'A computer vision pipeline that processes webcam input through MediaPipe hand and face landmark models, mapping detected gestures to discrete application actions. Runs at 15fps for hands and 10fps for face, with intelligent throttling to prevent frame drops.',
     tech: ['MediaPipe', 'TypeScript', 'WebRTC', 'Canvas API'],
     featured: true,
+    color: '#818cf8',
   },
   {
     id: 'island-world',
@@ -42,6 +45,7 @@ export const projects: Project[] = [
       'An isometric game environment built with React Three Fiber and Rapier physics. Features a Hawaiian-themed village with explorable areas, interactive NPCs, and physics-based interactions. Serves as the /world route of the portfolio.',
     tech: ['React Three Fiber', 'Rapier', 'TypeScript', 'Zustand'],
     featured: true,
+    color: '#7c3aed',
   },
   {
     id: 'shader-lab',
@@ -52,6 +56,7 @@ export const projects: Project[] = [
       'A creative coding playground for GLSL shader development. Includes procedural terrain generation, ocean wave simulation, atmospheric scattering, and bioluminescent particle effects. Many of these shaders power visuals throughout the portfolio.',
     tech: ['GLSL', 'Three.js', 'WebGL', 'TypeScript'],
     featured: true,
+    color: '#a78bfa',
   },
   {
     id: 'wave-function',
@@ -62,6 +67,7 @@ export const projects: Project[] = [
       'Implementation of the Wave Function Collapse algorithm for generating coherent tilemap layouts. Used to procedurally create village layouts and terrain patterns in the game world section of the portfolio.',
     tech: ['TypeScript', 'Canvas API', 'Algorithms'],
     featured: false,
+    color: '#6d28d9',
   },
   {
     id: 'midi-visualizer',
@@ -72,5 +78,6 @@ export const projects: Project[] = [
       'Connects to MIDI controllers via the Web MIDI API and translates note data into real-time 3D particle animations. Each MIDI channel maps to a different visual layer with configurable color palettes and physics behaviors.',
     tech: ['Web MIDI', 'Three.js', 'TypeScript', 'Web Audio'],
     featured: false,
+    color: '#4f46e5',
   },
 ]

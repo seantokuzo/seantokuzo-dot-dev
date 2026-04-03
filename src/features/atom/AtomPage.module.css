@@ -1,6 +1,7 @@
 .page {
   position: relative;
-  min-height: calc(100dvh - var(--nav-height));
+  min-height: 100dvh;
+  margin-top: calc(-1 * var(--nav-height));
   display: flex;
   flex-direction: column;
 }
@@ -8,12 +9,20 @@
 /* --- Controls --- */
 .controls {
   position: absolute;
-  top: var(--space-md);
-  right: var(--space-md);
+  top: calc(var(--nav-height) + var(--space-md));
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 10;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
+  transition: opacity 0.4s ease;
+}
+
+.controlsHidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .toggle {
@@ -46,7 +55,13 @@
 .canvasWrap {
   position: relative;
   flex: 1;
-  min-height: calc(100dvh - var(--nav-height));
+  min-height: 100dvh;
+  background: radial-gradient(
+    ellipse at 50% 40%,
+    #1a1035 0%,
+    #0d0c1e 55%,
+    #060714 100%
+  );
 }
 
 /* --- Hero Text Overlay --- */
@@ -58,16 +73,25 @@
   text-align: center;
   pointer-events: none;
   z-index: 5;
+  transition: opacity 0.5s ease;
+}
+
+.heroHidden {
+  opacity: 0;
 }
 
 .title {
   font-family: var(--font-heading);
   font-size: var(--text-5xl);
   background: linear-gradient(
-    135deg,
-    var(--color-ocean-turquoise),
-    var(--color-accent-bioluminescent)
+    90deg,
+    #b967ff,
+    #818cf8,
+    #0077b6,
+    #b967ff
   );
+  background-size: 300% 100%;
+  animation: gradientShift 6s linear infinite;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -81,6 +105,15 @@
   letter-spacing: 0.05em;
 }
 
+@keyframes gradientShift {
+  from {
+    background-position: 0% 50%;
+  }
+  to {
+    background-position: -100% 50%;
+  }
+}
+
 /* --- Responsive --- */
 @media (max-width: 768px) {
   .title {
@@ -92,11 +125,12 @@
   }
 
   .heroText {
-    bottom: var(--space-2xl);
+    top: calc(var(--nav-height) + var(--space-md));
+    bottom: auto;
   }
 
   .controls {
-    top: var(--space-sm);
-    right: var(--space-sm);
+    top: auto;
+    bottom: var(--space-2xl);
   }
 }

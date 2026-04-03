@@ -31,12 +31,12 @@ export function Nucleus() {
   const matRef = useRef<THREE.MeshPhysicalMaterial | null>(null)
   if (!matRef.current) {
     const mat = new THREE.MeshPhysicalMaterial({
-      color: new THREE.Color('#0a2540'),
-      metalness: 0.35,
-      roughness: 0.1,
+      color: new THREE.Color('#15062b'),
+      metalness: 0.4,
+      roughness: 0.08,
       clearcoat: 1,
       clearcoatRoughness: 0.03,
-      emissive: new THREE.Color('#00b4d8'),
+      emissive: new THREE.Color('#b967ff'),
       emissiveIntensity: 0.15,
     })
 
@@ -131,10 +131,11 @@ export function Nucleus() {
 
   return (
     <group>
-      <mesh ref={meshRef} receiveShadow castShadow material={matRef.current!}>
+      <mesh ref={meshRef} material={matRef.current!}>
         <sphereGeometry args={[1.2, 64, 64]} />
       </mesh>
-      <pointLight color="#00b4d8" intensity={0.6} distance={4} decay={2} />
+      <pointLight color="#b967ff" intensity={0.5} distance={4} decay={2} />
+      <pointLight color="#ff71ce" intensity={0.3} distance={3} decay={2} />
     </group>
   )
 }
