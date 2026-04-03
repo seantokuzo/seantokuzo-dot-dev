@@ -1,7 +1,13 @@
 import type React from 'react'
 import { useEffect, useRef, useCallback } from 'react'
-import type { Project } from '../../data/projects'
+import type { Project, ProjectStatus } from '../../data/projects'
 import styles from './ProjectOverlay.module.css'
+
+const STATUS_LABELS: Record<ProjectStatus, string> = {
+  'released': 'Released',
+  'in-development': 'In Development',
+  'early-stage': 'Early Stage',
+}
 
 interface ProjectOverlayProps {
   project: Project
@@ -74,10 +80,57 @@ export function ProjectOverlay({ project, onClose }: ProjectOverlayProps) {
           &times;
         </button>
 
-        <h2 className={styles.title}>{project.title}</h2>
+        <div className={styles.header}>
+          <h2 className={styles.title}>
+            {project.title}
+            {project.isPrivate && (
+              <svg
+                className={styles.lockIcon}
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-label="Private repository"
+              >
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            )}
+          </h2>
+          <span
+            className={styles.statusBadge}
+            data-status={project.status}
+          >
+            {STATUS_LABELS[project.status]}
+          </span>
+        </div>
+
         <p className={styles.description}>
           {project.longDescription || project.description}
         </p>
+
+        {project.media && (
+          <div className={styles.media}>
+            {project.media.type === 'video' ? (
+              <video
+                src={project.media.src}
+                controls
+                className={styles.mediaContent}
+                aria-label={project.media.alt || `${project.title} video`}
+              />
+            ) : (
+              <img
+                src={project.media.src}
+                alt={project.media.alt || `${project.title} preview`}
+                className={styles.mediaContent}
+              />
+            )}
+          </div>
+        )}
 
         <div className={styles.tech}>
           {project.tech.map((t) => (

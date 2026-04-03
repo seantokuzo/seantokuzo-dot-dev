@@ -28,6 +28,17 @@
   /* Accents */
   --color-accent-bioluminescent: #00f5d4;
 
+  /* Status */
+  --color-status-released: #34d399;
+  --color-status-released-bg: rgba(52, 211, 153, 0.1);
+  --color-status-released-border: rgba(52, 211, 153, 0.25);
+  --color-status-in-dev: #60a5fa;
+  --color-status-in-dev-bg: rgba(96, 165, 250, 0.1);
+  --color-status-in-dev-border: rgba(96, 165, 250, 0.25);
+  --color-status-early: #fbbf24;
+  --color-status-early-bg: rgba(251, 191, 36, 0.1);
+  --color-status-early-border: rgba(251, 191, 36, 0.25);
+
   /* Semantic */
   --color-bg-primary: var(--color-ocean-deep);
   --color-bg-secondary: var(--color-volcanic-obsidian);

@@ -86,14 +86,45 @@
 }
 
 .projectTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
   font-family: var(--font-heading);
   font-size: var(--text-sm);
   color: var(--color-text-primary);
   min-width: 8rem;
   text-align: center;
+  justify-content: center;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.lockIcon {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.separator {
+  color: var(--color-text-muted);
+}
+
+.statusText {
+  font-family: var(--font-primary);
+  font-size: var(--text-xs);
+  font-weight: 500;
+}
+
+.statusText[data-status="released"] {
+  color: var(--color-status-released);
+}
+
+.statusText[data-status="in-development"] {
+  color: var(--color-status-in-dev);
+}
+
+.statusText[data-status="early-stage"] {
+  color: var(--color-status-early);
 }
 
 @media (prefers-reduced-motion: reduce) {
