@@ -14,6 +14,24 @@ const NAV_ITEMS = [
   { to: '/about', label: 'About', color: '#a78bfa' },
 ]
 
+// Camera constants
+const CAMERA_FOV = 50
+const CAMERA_Z = 5
+
+// Label dimensions in 3D units (approximate)
+const LABEL_GAP = 0.25
+const LABEL_TEXT_3D = 0.12
+
+// Frustum-derived layout — scales with item count
+const VISIBLE_HEIGHT = 2 * Math.tan((CAMERA_FOV / 2) * (Math.PI / 180)) * CAMERA_Z
+const USABLE_HEIGHT = VISIBLE_HEIGHT * 0.85
+const SLOT_HEIGHT = USABLE_HEIGHT / NAV_ITEMS.length
+// Radius: sphere diameter + label must fit in slot, /2.4 leaves ~17% gap between units
+const ORB_RADIUS = Math.min(Math.max((SLOT_HEIGHT - LABEL_GAP - LABEL_TEXT_3D) / 2.4, 0.15), 0.65)
+const LABEL_OFFSET = -(ORB_RADIUS + LABEL_GAP)
+// Nudge all orbs up so each orb+label unit is visually centered in its slot
+const LABEL_NUDGE = (LABEL_GAP + LABEL_TEXT_3D) / 2
+
 function createOrbMaterial(
   color: string,
   shaderRef: React.MutableRefObject<{ uniforms: Record<string, { value: number }> } | null>
@@ -120,10 +138,10 @@ function NavOrb({
           document.body.style.cursor = 'auto'
         }}
       >
-        <sphereGeometry args={[0.4, 24, 24]} />
+        <sphereGeometry args={[ORB_RADIUS, 24, 24]} />
       </mesh>
 
-      <Html position={[0, -0.65, 0]} center>
+      <Html position={[0, LABEL_OFFSET, 0]} center>
         <span
           className={`${styles.orbLabel} ${isActive ? styles.orbLabelActive : ''}`}
           style={{ color }}
@@ -165,20 +183,20 @@ export function NavOrbMenu({ phase, onTransitionEnd, onNavigate }: NavOrbMenuPro
         onClick={(e) => e.stopPropagation()}
       >
         <Canvas
-          camera={{ position: [0, 0.1, 3.5], fov: 35 }}
+          camera={{ position: [0, 0, CAMERA_Z], fov: CAMERA_FOV }}
           gl={{ antialias: true, alpha: true }}
           style={{ background: 'transparent' }}
           onPointerMissed={onNavigate}
         >
           <ambientLight intensity={0.4} />
-          <pointLight position={[0, 2, 3]} intensity={0.8} color="#b967ff" />
+          <pointLight position={[2, 0, 3]} intensity={0.8} color="#b967ff" />
 
           {NAV_ITEMS.map((item, i) => {
-            const x = (i - (NAV_ITEMS.length - 1) / 2) * 1.8
+            const y = ((NAV_ITEMS.length - 1) / 2 - i) * SLOT_HEIGHT + LABEL_NUDGE
             return (
               <NavOrb
                 key={item.to}
-                position={[x, 0.15, 0]}
+                position={[0, y, 0]}
                 color={item.color}
                 label={item.label}
                 isActive={
