@@ -17,6 +17,11 @@ const ORBITS: {
   { radius: 4.0, tilt: [0.1, -0.3, 0.6], speed: 0.2, color: '#f9c74f' },
 ]
 
+// Pre-compute orbit assignments — no work per frame
+const ORBIT_PROJECTS = ORBITS.map((_, idx) =>
+  projects.filter((_, i) => i % ORBITS.length === idx)
+)
+
 interface AtomSceneProps {
   onSelectProject: (project: Project) => void
   onClearSelection: () => void
@@ -26,7 +31,8 @@ interface AtomSceneProps {
 export function AtomScene({ onSelectProject, onClearSelection, orbitPaused = false }: AtomSceneProps) {
   return (
     <Canvas
-      dpr={[1, 2]}
+      shadows
+      dpr={[1, 1.5]}
       camera={{ position: [0, 3, 8], fov: 50 }}
       gl={{ antialias: true, alpha: true }}
       style={{ position: 'absolute', inset: 0 }}
@@ -34,44 +40,55 @@ export function AtomScene({ onSelectProject, onClearSelection, orbitPaused = fal
     >
       <AdaptiveDpr pixelated />
 
-      {/* Lighting */}
-      <ambientLight intensity={0.4} />
-      <pointLight position={[10, 10, 10]} intensity={1} />
-      <pointLight position={[-10, -5, -10]} intensity={0.5} color="#00f5d4" />
+      {/* Lighting — directional casts shadows for nucleus + ground */}
+      <ambientLight intensity={0.3} />
+      <directionalLight
+        position={[5, 8, 5]}
+        intensity={1.2}
+        castShadow
+        shadow-camera-near={1}
+        shadow-camera-far={25}
+        shadow-camera-left={-6}
+        shadow-camera-right={6}
+        shadow-camera-top={6}
+        shadow-camera-bottom={-6}
+      />
+      <pointLight position={[-6, -3, -8]} intensity={0.4} color="#00f5d4" />
 
       {/* Nucleus */}
       <Nucleus />
 
+      {/* Shadow-catching ground plane — invisible, same depth as scene floor */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -4, 0]} receiveShadow>
+        <planeGeometry args={[20, 20]} />
+        <shadowMaterial opacity={0.35} />
+      </mesh>
+
       {/* Orbits + Project Orbs */}
-      {ORBITS.map((orbit, orbitIdx) => {
-        const orbitProjects = projects.filter(
-          (_, i) => i % ORBITS.length === orbitIdx
-        )
-        return (
-          <group key={orbitIdx}>
-            <ElectronOrbit
-              radius={orbit.radius}
-              tilt={orbit.tilt}
-              color={orbit.color}
-            />
-            {orbitProjects.map((project, projIdx) => {
-              const angleSpread =
-                (Math.PI * 2) / Math.max(orbitProjects.length, 1)
-              return (
-                <ProjectOrb
-                  key={project.id}
-                  project={project}
-                  orbitRadius={orbit.radius}
-                  orbitTilt={orbit.tilt}
-                  speed={orbit.speed}
-                  startAngle={projIdx * angleSpread}
-                  onSelect={onSelectProject}
-                />
-              )
-            })}
-          </group>
-        )
-      })}
+      {ORBITS.map((orbit, orbitIdx) => (
+        <group key={orbitIdx}>
+          <ElectronOrbit
+            radius={orbit.radius}
+            tilt={orbit.tilt}
+            color={orbit.color}
+          />
+          {ORBIT_PROJECTS[orbitIdx].map((project, projIdx) => {
+            const angleSpread =
+              (Math.PI * 2) / Math.max(ORBIT_PROJECTS[orbitIdx].length, 1)
+            return (
+              <ProjectOrb
+                key={project.id}
+                project={project}
+                orbitRadius={orbit.radius}
+                orbitTilt={orbit.tilt}
+                speed={orbit.speed}
+                startAngle={projIdx * angleSpread}
+                onSelect={onSelectProject}
+              />
+            )
+          })}
+        </group>
+      ))}
 
       {/* Controls */}
       <OrbitControls

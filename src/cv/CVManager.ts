@@ -23,10 +23,9 @@ export class CVManager {
    * Initialize models (can be slow — downloads WASM + model files).
    */
   async init(): Promise<void> {
-    await Promise.all([
-      this.handTracker.init(),
-      this.faceTracker.init(),
-    ])
+    // Face tracker disabled — model download (~10MB) skipped until face actions are wired up
+    // await this.faceTracker.init()
+    await this.handTracker.init()
   }
 
   /**
@@ -71,9 +70,10 @@ export class CVManager {
     this.onFrame = onFrame ?? null
 
     // 25fps tick rate = 40ms interval
-    // Pattern over 5 ticks: H, H, F, H, F → 3 hand (15fps) + 2 face (10fps)
-    const TICK_INTERVAL = 1000 / 25
-    const pattern: ('hand' | 'face')[] = ['hand', 'hand', 'face', 'hand', 'face']
+    // Face detection disabled — all ticks go to hand (~15fps effective)
+    // Original pattern: ['hand', 'hand', 'face', 'hand', 'face']
+    const TICK_INTERVAL = 1000 / 15
+    const pattern: ('hand' | 'face')[] = ['hand']
     let tickCount = 0
 
     this.timer = setInterval(() => {

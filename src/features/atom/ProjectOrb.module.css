@@ -1,14 +1,60 @@
-.tooltip {
-  background: var(--color-bg-overlay);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 6px 12px;
-  color: var(--color-text-primary);
-  font-family: var(--font-heading);
-  font-size: 12px;
-  font-weight: 500;
+.telemetryLabel {
+  display: flex;
+  align-items: center;
+  gap: 0;
   white-space: nowrap;
-  pointer-events: none;
-  user-select: none;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+
+  /* Reset button styles */
+  background: none;
+  border: none;
+  padding: 2px 0;
+  margin: 0;
+  cursor: pointer;
+  outline: none;
+}
+
+.telemetryLabel:focus-visible {
+  opacity: 1;
+  outline: 1px solid currentColor;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.telemetryLabel.hovered {
+  opacity: 1;
+}
+
+.labelLine {
+  display: block;
+  width: 14px;
+  height: 0;
+  border-top: 1px solid;
+  opacity: 0.5;
+  margin-right: 6px;
+  flex-shrink: 0;
+}
+
+.labelText {
+  font-family: var(--font-body), 'Inter', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.featuredTag {
+  font-family: var(--font-body), 'Inter', sans-serif;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-left: 5px;
+  padding: 1px 3px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  opacity: 0.6;
+  line-height: 1;
 }
