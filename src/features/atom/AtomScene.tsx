@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
+import { useState, useRef, useCallback, useEffect, useMemo, forwardRef, useImperativeHandle } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, AdaptiveDpr } from '@react-three/drei'
 import * as THREE from 'three'
@@ -32,7 +32,7 @@ const ORBITS_MOBILE: OrbitConfig[] = [
 
 const CAMERA_Y = 3
 const CAMERA_Z_DESKTOP = 8
-const ORB_RADIUS = 0.18 // electron radius — must match ProjectOrb
+const ORB_RADIUS_MOBILE = 0.24
 
 /**
  * Compute camera Z so all orbits + electrons fit within the viewport width.
@@ -43,26 +43,37 @@ function computeFitCameraZ(
   orbits: OrbitConfig[],
   fov: number,
   cameraY: number,
+  orbRadius: number,
   padding = 1.1
 ): number {
   const aspect = window.innerWidth / window.innerHeight || 1
   const hFovHalf = Math.atan(aspect * Math.tan((fov * Math.PI) / 360))
-  const maxExtent = Math.max(...orbits.map((o) => o.radius)) + ORB_RADIUS
+  const maxExtent = Math.max(...orbits.map((o) => o.radius)) + orbRadius
   const requiredDist = (maxExtent * padding) / Math.tan(hFovHalf)
   return Math.sqrt(Math.max(1, requiredDist * requiredDist - cameraY * cameraY))
+}
+
+export interface AtomSceneHandle {
+  focusProject: (project: Project) => void
+  stepToProject: (project: Project) => void
+  requestClose: () => void
 }
 
 interface AtomSceneProps {
   orbitPaused?: boolean
   isMobile?: boolean
   onFocusChange?: (focused: boolean) => void
+  onFocusedProjectChange?: (project: Project | null) => void
 }
 
-export function AtomScene({ orbitPaused = false, isMobile = false, onFocusChange }: AtomSceneProps) {
+export const AtomScene = forwardRef<AtomSceneHandle, AtomSceneProps>(function AtomScene(
+  { orbitPaused = false, isMobile = false, onFocusChange, onFocusedProjectChange },
+  ref
+) {
   const orbits = isMobile ? ORBITS_MOBILE : ORBITS_DESKTOP
   const cameraFov = isMobile ? 60 : 50
   const cameraZ = isMobile
-    ? computeFitCameraZ(orbits, cameraFov, CAMERA_Y)
+    ? computeFitCameraZ(orbits, cameraFov, CAMERA_Y, ORB_RADIUS_MOBILE)
     : CAMERA_Z_DESKTOP
   const polarAngle = Math.acos(CAMERA_Y / Math.sqrt(CAMERA_Y ** 2 + cameraZ ** 2))
 
@@ -95,6 +106,12 @@ export function AtomScene({ orbitPaused = false, isMobile = false, onFocusChange
     }
   }, [])
 
+  const handleStepToProject = useCallback((project: Project) => {
+    if (focusPhaseRef.current !== 'focused') return
+    setFocusedProject(project)
+    setFocusPhase('stepping')
+  }, [])
+
   const requestClose = useCallback(() => {
     if (focusPhaseRef.current !== 'focused') return
     setFocusPhase('card-exit')
@@ -112,6 +129,16 @@ export function AtomScene({ orbitPaused = false, isMobile = false, onFocusChange
     setFocusPhase('idle')
     setFocusedProject(null)
   }, [])
+
+  useEffect(() => {
+    onFocusedProjectChange?.(focusedProject)
+  }, [focusedProject, onFocusedProjectChange])
+
+  useImperativeHandle(ref, () => ({
+    focusProject: handleSelectProject,
+    stepToProject: handleStepToProject,
+    requestClose,
+  }), [handleSelectProject, handleStepToProject, requestClose])
 
   return (
     <Canvas
@@ -160,6 +187,7 @@ export function AtomScene({ orbitPaused = false, isMobile = false, onFocusChange
                 onRequestClose={requestClose}
                 onCardExitComplete={handleCardExitComplete}
                 isMobile={isMobile}
+                orbitPaused={orbitPaused}
               />
             )
           })}
@@ -190,4 +218,4 @@ export function AtomScene({ orbitPaused = false, isMobile = false, onFocusChange
       />
     </Canvas>
   )
-}
+})

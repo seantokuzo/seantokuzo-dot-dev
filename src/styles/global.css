@@ -52,6 +52,10 @@
   --color-accent-bio-50: rgba(0, 245, 212, 0.5);
   --color-turquoise-40: rgba(0, 180, 216, 0.4);
   --color-turquoise-30: rgba(0, 180, 216, 0.3);
+  --color-purple-soft: #a78bfa;
+  --color-purple-30: rgba(139, 92, 246, 0.3);
+  --color-purple-60: rgba(139, 92, 246, 0.6);
+  --color-glow-purple-subtle: rgba(139, 92, 246, 0.1);
 
   /* Spacing Scale */
   --space-xs: 0.25rem;
@@ -95,6 +99,7 @@
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
   --shadow-glow-cyan: 0 0 20px rgba(0, 245, 212, 0.3);
   --shadow-glow-turquoise: 0 0 20px rgba(0, 180, 216, 0.3);
+  --shadow-glow-purple: 0 0 20px rgba(139, 92, 246, 0.08);
 
   /* Transitions */
   --transition-fast: 150ms ease;

@@ -2,7 +2,7 @@ import { useRef, useEffect } from 'react'
 import { useThree, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
-export type FocusPhase = 'idle' | 'focusing' | 'focused' | 'card-exit' | 'unfocusing'
+export type FocusPhase = 'idle' | 'focusing' | 'focused' | 'stepping' | 'card-exit' | 'unfocusing'
 
 interface CameraControllerProps {
   phase: FocusPhase
@@ -25,7 +25,6 @@ const MOBILE_LOOK_BELOW = 0.25
 // desiredPos velocity ≈ orbit_v * (1 + FOCUS_OFFSET / orbit_r) — up to ~1.36 u/s
 // Steady-state error = desiredPos_velocity / lerp_speed, must be < ARRIVE_THRESHOLD
 const LERP_FOCUS = 10
-const LERP_TRACK = 12
 const LERP_RETURN = 3
 
 // Ease-in ramp duration (seconds) — camera gradually accelerates from 0
@@ -70,7 +69,7 @@ export function CameraController({
       lookAtPos.current.copy(savedCtrlTarget.current)
     }
     // Reset animation timer for new phases
-    if (phase === 'focusing' || phase === 'unfocusing') {
+    if (phase === 'focusing' || phase === 'stepping' || phase === 'unfocusing') {
       phaseStartTime.current = -1
     }
   }, [phase, camera, controlsRef])
@@ -85,7 +84,7 @@ export function CameraController({
     }
     const elapsed = state.clock.elapsedTime - phaseStartTime.current
 
-    if (phase === 'focusing' || phase === 'focused' || phase === 'card-exit') {
+    if (phase === 'focusing' || phase === 'stepping' || phase === 'focused' || phase === 'card-exit') {
       const orbPos = targetRef.current
       const focusOffset = isMobile ? FOCUS_OFFSET_MOBILE : FOCUS_OFFSET
 
@@ -94,22 +93,32 @@ export function CameraController({
       desiredPos.current.copy(orbPos).addScaledVector(dirVec.current, focusOffset)
       desiredPos.current.y += FOCUS_HEIGHT
 
-      // Ease-in ramp: speed starts at 0 and smoothly ramps to full
-      const ramp = phase === 'focusing' ? smoothstep(elapsed / EASE_IN_FOCUS) : 1
-      const speed = (phase === 'focusing' ? LERP_FOCUS : LERP_TRACK) * ramp
-      camera.position.lerp(desiredPos.current, speed * dt)
-
-      // On mobile, look below the electron to shift it into the upper third
-      if (isMobile) {
-        lookTargetVec.current.copy(orbPos)
-        lookTargetVec.current.y -= MOBILE_LOOK_BELOW
-        lookAtPos.current.lerp(lookTargetVec.current, speed * dt)
+      if (phase === 'focused' || phase === 'card-exit') {
+        // Snap-track: camera moves in perfect sync with orbiting electron
+        camera.position.copy(desiredPos.current)
+        if (isMobile) {
+          lookTargetVec.current.copy(orbPos)
+          lookTargetVec.current.y -= MOBILE_LOOK_BELOW
+          lookAtPos.current.copy(lookTargetVec.current)
+        } else {
+          lookAtPos.current.copy(orbPos)
+        }
       } else {
-        lookAtPos.current.lerp(orbPos, speed * dt)
+        // Ease-in ramp: speed starts at 0 and smoothly ramps to full
+        const ramp = smoothstep(elapsed / EASE_IN_FOCUS)
+        const speed = LERP_FOCUS * ramp
+        camera.position.lerp(desiredPos.current, speed * dt)
+        if (isMobile) {
+          lookTargetVec.current.copy(orbPos)
+          lookTargetVec.current.y -= MOBILE_LOOK_BELOW
+          lookAtPos.current.lerp(lookTargetVec.current, speed * dt)
+        } else {
+          lookAtPos.current.lerp(orbPos, speed * dt)
+        }
       }
       camera.lookAt(lookAtPos.current)
 
-      if (phase === 'focusing') {
+      if (phase === 'focusing' || phase === 'stepping') {
         if (camera.position.distanceTo(desiredPos.current) < ARRIVE_THRESHOLD) {
           onFocusComplete()
         }
