@@ -5,14 +5,14 @@ paths: ["src/components/**", "src/features/**", "src/hooks/**"]
 # Frontend Rules
 
 ## Component Structure
-- One component per file
-- File name matches the default export
+- Prefer one primary component per file, but multiple local helper components/functions in the same file are allowed when they are tightly related
+- Use either named or default exports to match the existing file pattern; name the file after the primary component or feature it contains
 - Props interface defined above the component
 
 ## Styling
-- CSS Modules for all component styles (`.module.css`)
+- Prefer CSS Modules for component styles (`.module.css`)
 - CSS custom properties from `src/styles/global.css` — use semantic tokens (`--color-text-primary`) not raw values
-- No CSS-in-JS, no Tailwind, no runtime styling, no inline styles
+- No Tailwind; avoid CSS-in-JS and runtime styling unless there is a clear need; inline styles are allowed for dynamic values that are awkward in CSS Modules (e.g., R3F overlays or scene-driven positioning)
 
 ## React Three Fiber
 - Dispose all Three.js resources on unmount (materials, geometries, textures)

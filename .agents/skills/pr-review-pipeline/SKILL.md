@@ -209,10 +209,10 @@ done
 
 ### Step 10: Threshold Check & Loop
 
-Count **all new top-level comments** from this round (Copilot + humans — all comments need addressing):
+Count **new top-level PR review comments** from this round (Copilot + humans). This counts only review comments from `/pulls/{PR_NUMBER}/comments` where `in_reply_to_id == null` (top-level inline diff-thread comments). It does **not** include PR conversation comments from `/issues/{PR_NUMBER}/comments` or review summaries.
 
 ```bash
-# Compare against baseline captured in Step 8
+# Compare against baseline captured in Step 8 for top-level PR review comments only
 COMMENTS_AFTER=$(gh api repos/seantokuzo/seantokuzo-dot-dev/pulls/{PR_NUMBER}/comments \
   --jq '[.[] | select(.in_reply_to_id == null)] | length')
 NEW_COMMENTS=$((COMMENTS_AFTER - COMMENTS_BEFORE))
