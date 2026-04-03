@@ -1,60 +1,71 @@
-Implement Phase 8: Launch Prep. Branch: `phase-8/launch-prep` off `main`.
+Update all project card/overlay components to consume the new `Project` interface fields (`isPrivate`, `status`, `media`). Branch: `phase-9/project-cards-v2` off `main`.
 
-The site has 7 phases shipped + a nucleus redesign (PR #9). The atom home page now has:
-- MeshPhysicalMaterial nucleus with mouse-reactive simplex noise vertex displacement (frequency + amplitude scale with mouse speed, non-uniform spatial variation)
-- Telemetry-style HUD labels on orbiting project electrons with keyboard accessibility
-- Simplex noise hover displacement on electrons
-- Lightweight shadows via invisible ground plane
-- CV face tracker disabled (code intact, not loaded)
-- Open tech-debt issue #10: replace inline style props with CSS custom properties on ProjectOrb
+PR #13 just merged — `src/data/projects.ts` now has 7 real projects (replacing 6 placeholders) with an extended interface:
 
-This is the final phase — make it production-ready.
+```ts
+type ProjectStatus = 'released' | 'in-development' | 'early-stage'
+interface ProjectMedia { type: 'image' | 'video' | 'gif'; src: string; alt?: string }
+interface Project {
+  // existing: id, title, description, longDescription, tech, url?, github?, featured, color
+  isPrivate: boolean       // true = no repo link, show lock icon
+  status: ProjectStatus    // badge/indicator on cards
+  media: ProjectMedia | null  // null for now, render when present
+}
+```
 
-## 5 Tickets — Parallelize Wave 1 (tickets 1-3), then Wave 2 (tickets 4-5)
+Private repos (u-suck-at-money, roi-gen, the-bach) have `isPrivate: true` and no `github` URL.
+Public repos (major-tom, face-fling, seantokuzo-mcp) have `isPrivate: false` and a `github` URL.
 
----
-
-### Ticket 1: SEO & Meta Tags
-Add proper Open Graph images (generate an OG card from the atom scene), structured data (JSON-LD Person schema), canonical URLs, and a sitemap.xml. Each page needs unique title, description, and OG tags. Add robots.txt.
-
-**Files:** `index.html`, `public/`, new `src/components/layout/Meta.tsx` or head manager
-
----
-
-### Ticket 2: Performance Audit
-Run Lighthouse on all 3 pages. Optimize: preload critical fonts (Inter, Outfit woff2), add resource hints for MediaPipe CDN, lazy-load heavy components more aggressively, add loading states for all async operations. Target 90+ on all Lighthouse categories. Review bundle size — the chunk warning from Vite should be addressed.
-
-**Files:** `index.html`, `src/App.tsx`, route-level lazy imports, `vite.config.ts`
+## 4 Tickets — Parallelize Wave 1 (1-3), then Wave 2 (4)
 
 ---
 
-### Ticket 3: Accessibility Audit
-Full keyboard navigation through all pages. Screen reader testing with VoiceOver. ARIA labels on all interactive elements. Focus management on project overlay (trap focus, return focus on close). Reduced motion support — `prefers-reduced-motion` should disable 3D animations, vertex displacement, and orbit rotation, showing a static simplified view.
+### Ticket 1: Project Card + Overlay — consume new fields
 
-**Files:** `src/features/atom/`, `src/features/game/`, `src/components/ui/`, `src/styles/global.css`
+Update `ProjectCard.tsx` and `ProjectOverlay.tsx` to display:
+- **Status badge** — small pill/tag showing `released`, `in development`, or `early stage`
+- **Private indicator** — lock icon (inline SVG or CSS) next to title when `isPrivate: true`
+- **Media slot** — conditionally render image/video/gif from `media` when not null (placeholder-ready)
+- Hide the "GitHub" link when `project.github` is absent (already works via conditional, but verify)
 
----
+Style the badge and lock icon using CSS Modules. Use semantic colors from `global.css` design tokens (add new tokens if needed — e.g. `--color-status-released`, `--color-status-in-dev`, `--color-status-early`).
 
-### Ticket 4: Error Boundaries
-Add React error boundaries around each heavy feature (R3F atom scene, R3F game scene, CV system) with graceful fallback UIs. No blank screens on crash — show a styled error card with retry option. The atom page should fall back to ProjectList on R3F crash.
-
-**Files:** new `src/components/ui/ErrorBoundary.tsx`, `src/features/atom/AtomPage.tsx`, `src/features/game/GamePage.tsx`
-
----
-
-### Ticket 5: Final QA & Tech Debt
-Address #10 (inline styles on ProjectOrb). Cross-browser testing (Chrome, Firefox, Safari). Mobile testing — all pages functional with touch, simplified 3D or list fallbacks. Verify total assets under 10MB budget. Fix any remaining TypeScript strict-mode warnings.
-
-**Files:** `src/features/atom/ProjectOrb.tsx`, `src/features/atom/ProjectOrb.module.css`, various
+**Files:** `src/features/atom/ProjectCard.tsx`, `src/features/atom/ProjectCard.module.css`, `src/features/atom/ProjectOverlay.tsx`, `src/features/atom/ProjectOverlay.module.css`, `src/styles/global.css`
 
 ---
 
-## Quality Gates
-Before marking Phase 8 complete:
-1. `npm run build` passes clean (no warnings except chunk size if addressed)
-2. Lighthouse 90+ on all categories for all 3 pages
-3. Keyboard-navigable end-to-end
-4. `prefers-reduced-motion` respected
-5. Error boundaries catch R3F/CV crashes gracefully
-6. Total assets under 10MB
-7. Works on mobile (touch, list fallbacks)
+### Ticket 2: ProjectList + ProjectStepper — consume new fields
+
+Update `ProjectList.tsx` to show a compact status indicator and lock icon per card in the grid. The stepper (`ProjectStepper.tsx`) should show the status next to the project title.
+
+**Files:** `src/features/atom/ProjectList.tsx`, `src/features/atom/ProjectList.module.css`, `src/features/atom/ProjectStepper.tsx`, `src/features/atom/ProjectStepper.module.css`
+
+---
+
+### Ticket 3: AboutPage + InteractionOverlay — consume new fields
+
+Update `AboutPage.tsx` projects section and `InteractionOverlay.tsx` projects content to display status badges and private indicators. These are simpler card layouts — keep the updates minimal and consistent with the atom page cards.
+
+**Files:** `src/features/about/AboutPage.tsx`, `src/features/about/AboutPage.module.css`, `src/features/game/InteractionOverlay.tsx`, `src/features/game/InteractionOverlay.module.css`
+
+---
+
+### Ticket 4: Visual QA + build verification
+
+After all card updates:
+1. `npm run build` (or `tsc -b`) passes clean
+2. Visually verify all 3 pages render the new project data correctly
+3. Confirm private projects show lock icon, no GitHub link
+4. Confirm status badges render with appropriate styling
+5. Keyboard navigation still works on all card variants
+6. Mobile layout handles the extra UI elements gracefully
+
+---
+
+## Key constraints
+- CSS Modules only — no inline styles, no Tailwind, no CSS-in-JS
+- Use design tokens from `src/styles/global.css` — add new ones as needed
+- Lock icon should be an inline SVG element, not an emoji or image asset
+- Status badge colors should be subtle — don't overpower the project's `color` theme
+- `media` field is null on all projects right now — just wire up the conditional render so it's ready when assets are added later
+- Keep the `longDescription || description` fallback pattern (longDescription is now required but the pattern is harmless)
