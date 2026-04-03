@@ -223,11 +223,50 @@
   transform: translateY(-2px);
 }
 
+.projectHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
 .projectTitle {
   font-family: var(--font-heading);
   font-size: var(--text-xl);
   font-weight: 600;
   color: var(--color-text-primary);
+}
+
+.lockIcon {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.statusBadge {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-full);
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.statusBadge[data-status="released"] {
+  color: var(--color-status-released);
+  background: var(--color-status-released-bg);
+  border-color: var(--color-status-released-border);
+}
+
+.statusBadge[data-status="in-development"] {
+  color: var(--color-status-in-dev);
+  background: var(--color-status-in-dev-bg);
+  border-color: var(--color-status-in-dev-border);
+}
+
+.statusBadge[data-status="early-stage"] {
+  color: var(--color-status-early);
+  background: var(--color-status-early-bg);
+  border-color: var(--color-status-early-border);
 }
 
 .projectDescription {

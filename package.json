@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && netlify deploy --dir=dist --site=600021a3-81f8-4d8f-a1f5-6d486ce11181",
+    "deploy:prod": "npm run build && netlify deploy --prod --dir=dist --site=600021a3-81f8-4d8f-a1f5-6d486ce11181"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^0.10.33",

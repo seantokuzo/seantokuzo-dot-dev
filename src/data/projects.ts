@@ -21,6 +21,12 @@ export interface Project {
   color: string
 }
 
+export const STATUS_LABELS: Record<ProjectStatus, string> = {
+  'released': 'Released',
+  'in-development': 'In Development',
+  'early-stage': 'Early Stage',
+}
+
 export const projects: Project[] = [
   {
     id: 'seantokuzo-dev',
@@ -36,7 +42,7 @@ export const projects: Project[] = [
     status: 'in-development',
     media: null,
     featured: true,
-    color: '#c084fc',
+    color: '#c084fc',  // soft purple
   },
   {
     id: 'u-suck-at-money',
@@ -60,7 +66,7 @@ export const projects: Project[] = [
     status: 'in-development',
     media: null,
     featured: true,
-    color: '#34d399',
+    color: '#818cf8',
   },
   {
     id: 'major-tom',
@@ -84,7 +90,7 @@ export const projects: Project[] = [
     status: 'in-development',
     media: null,
     featured: true,
-    color: '#60a5fa',
+    color: '#7c3aed',
   },
   {
     id: 'roi-gen',
@@ -108,7 +114,7 @@ export const projects: Project[] = [
     status: 'in-development',
     media: null,
     featured: true,
-    color: '#f59e0b',
+    color: '#a78bfa',
   },
   {
     id: 'face-fling',
@@ -123,7 +129,7 @@ export const projects: Project[] = [
     status: 'early-stage',
     media: null,
     featured: true,
-    color: '#f472b6',
+    color: '#6d28d9',
   },
   {
     id: 'seantokuzo-mcp',
@@ -146,7 +152,7 @@ export const projects: Project[] = [
     status: 'released',
     media: null,
     featured: false,
-    color: '#a78bfa',
+    color: '#4f46e5',
   },
   {
     id: 'the-bach',
@@ -170,6 +176,6 @@ export const projects: Project[] = [
     status: 'in-development',
     media: null,
     featured: true,
-    color: '#fb923c',
+    color: '#8b5cf6',
   },
 ]

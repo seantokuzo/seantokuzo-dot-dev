@@ -2,7 +2,8 @@ import { useEffect, useRef, useCallback } from 'react'
 import type React from 'react'
 import { useNavigate } from 'react-router'
 import { useGameStore, type InteractableId } from '../../store/useGameStore'
-import { projects } from '../../data/projects'
+import { projects, STATUS_LABELS } from '../../data/projects'
+import { LockIcon } from '../../components/ui/LockIcon'
 import { skills, skillCategories, type SkillCategory } from '../../data/skills'
 import { socialLinks } from '../../data/bio'
 import styles from './InteractionOverlay.module.css'
@@ -111,7 +112,15 @@ function ProjectsContent() {
       <div className={styles.projectGrid}>
         {projects.map((project) => (
           <div key={project.id} className={styles.projectCard}>
-            <h3 className={styles.projectTitle}>{project.title}</h3>
+            <div className={styles.projectHeader}>
+              <h3 className={styles.projectTitle}>{project.title}</h3>
+              {project.isPrivate && (
+                <LockIcon className={styles.lockIcon} />
+              )}
+              <span className={styles.statusBadge} data-status={project.status}>
+                {STATUS_LABELS[project.status]}
+              </span>
+            </div>
             <p className={styles.projectDesc}>{project.description}</p>
             <div className={styles.tags}>
               {project.tech.slice(0, 4).map((t) => (

@@ -58,7 +58,18 @@
   color: var(--color-text-primary);
 }
 
+.header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+  flex-wrap: wrap;
+}
+
 .title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
   font-family: var(--font-heading);
   font-size: var(--text-2xl);
   background: linear-gradient(
@@ -69,7 +80,42 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: var(--space-md);
+  margin-bottom: 0;
+}
+
+.lockIcon {
+  color: var(--color-text-muted);
+  -webkit-text-fill-color: initial;
+  flex-shrink: 0;
+}
+
+.statusBadge {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.statusBadge[data-status="released"] {
+  color: var(--color-status-released);
+  background: var(--color-status-released-bg);
+  border-color: var(--color-status-released-border);
+}
+
+.statusBadge[data-status="in-development"] {
+  color: var(--color-status-in-dev);
+  background: var(--color-status-in-dev-bg);
+  border-color: var(--color-status-in-dev-border);
+}
+
+.statusBadge[data-status="early-stage"] {
+  color: var(--color-status-early);
+  background: var(--color-status-early-bg);
+  border-color: var(--color-status-early-border);
 }
 
 .description {
@@ -77,6 +123,15 @@
   font-size: var(--text-base);
   line-height: var(--leading-relaxed);
   margin-bottom: var(--space-lg);
+}
+
+.media {
+  margin-bottom: var(--space-lg);
+}
+
+.mediaContent {
+  max-width: 100%;
+  border-radius: var(--radius-md, 8px);
 }
 
 .tech {

@@ -1,4 +1,5 @@
-import type { Project } from '../../data/projects'
+import { STATUS_LABELS, type Project } from '../../data/projects'
+import { LockIcon } from '../../components/ui/LockIcon'
 import styles from './ProjectStepper.module.css'
 
 interface ProjectStepperProps {
@@ -41,7 +42,16 @@ export function ProjectStepper({
       >
         <span aria-hidden="true">&larr;</span>
       </button>
-      <span className={styles.projectTitle}>{focusedProject.title}</span>
+      <span className={styles.projectTitle}>
+        {focusedProject.isPrivate && (
+          <LockIcon size={12} strokeWidth={2.5} className={styles.lockIcon} />
+        )}
+        {focusedProject.title}
+        <span className={styles.separator} aria-hidden="true">&middot;</span>
+        <span className={styles.statusText} data-status={focusedProject.status}>
+          {STATUS_LABELS[focusedProject.status]}
+        </span>
+      </span>
       <button
         type="button"
         className={styles.navBtn}

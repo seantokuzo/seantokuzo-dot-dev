@@ -2,7 +2,8 @@ import { bio, socialLinks } from '../../data/bio'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { skills, skillCategories, type SkillCategory } from '../../data/skills'
 import { experience } from '../../data/experience'
-import { projects } from '../../data/projects'
+import { projects, STATUS_LABELS } from '../../data/projects'
+import { LockIcon } from '../../components/ui/LockIcon'
 import styles from './AboutPage.module.css'
 
 function BioSection() {
@@ -73,7 +74,15 @@ function ProjectsSection() {
       <div className={styles.projectsGrid}>
         {featured.map((project) => (
           <article key={project.id} className={styles.projectCard}>
-            <h3 className={styles.projectTitle}>{project.title}</h3>
+            <div className={styles.projectHeader}>
+              <h3 className={styles.projectTitle}>{project.title}</h3>
+              {project.isPrivate && (
+                <LockIcon className={styles.lockIcon} />
+              )}
+              <span className={styles.statusBadge} data-status={project.status}>
+                {STATUS_LABELS[project.status]}
+              </span>
+            </div>
             <p className={styles.projectDescription}>{project.description}</p>
             <div className={styles.projectTech}>
               {project.tech.map((t) => (

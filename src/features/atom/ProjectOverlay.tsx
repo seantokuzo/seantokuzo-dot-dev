@@ -1,6 +1,7 @@
 import type React from 'react'
 import { useEffect, useRef, useCallback } from 'react'
-import type { Project } from '../../data/projects'
+import { STATUS_LABELS, type Project } from '../../data/projects'
+import { LockIcon } from '../../components/ui/LockIcon'
 import styles from './ProjectOverlay.module.css'
 
 interface ProjectOverlayProps {
@@ -74,10 +75,43 @@ export function ProjectOverlay({ project, onClose }: ProjectOverlayProps) {
           &times;
         </button>
 
-        <h2 className={styles.title}>{project.title}</h2>
+        <div className={styles.header}>
+          <h2 className={styles.title}>
+            {project.title}
+            {project.isPrivate && (
+              <LockIcon size={16} className={styles.lockIcon} />
+            )}
+          </h2>
+          <span
+            className={styles.statusBadge}
+            data-status={project.status}
+          >
+            {STATUS_LABELS[project.status]}
+          </span>
+        </div>
+
         <p className={styles.description}>
           {project.longDescription || project.description}
         </p>
+
+        {project.media && (
+          <div className={styles.media}>
+            {project.media.type === 'video' ? (
+              <video
+                src={project.media.src}
+                controls
+                className={styles.mediaContent}
+                aria-label={project.media.alt || `${project.title} video`}
+              />
+            ) : (
+              <img
+                src={project.media.src}
+                alt={project.media.alt || `${project.title} preview`}
+                className={styles.mediaContent}
+              />
+            )}
+          </div>
+        )}
 
         <div className={styles.tech}>
           {project.tech.map((t) => (

@@ -1,4 +1,5 @@
-import { projects, type Project } from '../../data/projects'
+import { projects, STATUS_LABELS, type Project } from '../../data/projects'
+import { LockIcon } from '../../components/ui/LockIcon'
 import styles from './ProjectList.module.css'
 
 interface ProjectListProps {
@@ -17,7 +18,15 @@ export function ProjectList({ onSelectProject }: ProjectListProps) {
             type="button"
             onClick={() => onSelectProject(project)}
           >
-            <h3 className={styles.title}>{project.title}</h3>
+            <div className={styles.titleRow}>
+              <h3 className={styles.title}>{project.title}</h3>
+              {project.isPrivate && (
+                <LockIcon size={13} strokeWidth={2.5} className={styles.lockIcon} />
+              )}
+              <span className={styles.statusBadge} data-status={project.status}>
+                {STATUS_LABELS[project.status]}
+              </span>
+            </div>
             <p className={styles.description}>{project.description}</p>
             <div className={styles.tech}>
               {project.tech.slice(0, 4).map((t) => (
