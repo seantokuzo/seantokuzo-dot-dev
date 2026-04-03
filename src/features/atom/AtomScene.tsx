@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect, useMemo } from 'react'
+import { useState, useRef, useCallback, useEffect, useMemo, forwardRef, useImperativeHandle } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, AdaptiveDpr } from '@react-three/drei'
 import * as THREE from 'three'
@@ -52,13 +52,23 @@ function computeFitCameraZ(
   return Math.sqrt(Math.max(1, requiredDist * requiredDist - cameraY * cameraY))
 }
 
+export interface AtomSceneHandle {
+  focusProject: (project: Project) => void
+  stepToProject: (project: Project) => void
+  requestClose: () => void
+}
+
 interface AtomSceneProps {
   orbitPaused?: boolean
   isMobile?: boolean
   onFocusChange?: (focused: boolean) => void
+  onFocusedProjectChange?: (project: Project | null) => void
 }
 
-export function AtomScene({ orbitPaused = false, isMobile = false, onFocusChange }: AtomSceneProps) {
+export const AtomScene = forwardRef<AtomSceneHandle, AtomSceneProps>(function AtomScene(
+  { orbitPaused = false, isMobile = false, onFocusChange, onFocusedProjectChange },
+  ref
+) {
   const orbits = isMobile ? ORBITS_MOBILE : ORBITS_DESKTOP
   const cameraFov = isMobile ? 60 : 50
   const cameraZ = isMobile
@@ -95,6 +105,12 @@ export function AtomScene({ orbitPaused = false, isMobile = false, onFocusChange
     }
   }, [])
 
+  const handleStepToProject = useCallback((project: Project) => {
+    if (focusPhaseRef.current !== 'focused') return
+    setFocusedProject(project)
+    setFocusPhase('stepping')
+  }, [])
+
   const requestClose = useCallback(() => {
     if (focusPhaseRef.current !== 'focused') return
     setFocusPhase('card-exit')
@@ -112,6 +128,16 @@ export function AtomScene({ orbitPaused = false, isMobile = false, onFocusChange
     setFocusPhase('idle')
     setFocusedProject(null)
   }, [])
+
+  useEffect(() => {
+    onFocusedProjectChange?.(focusedProject)
+  }, [focusedProject, onFocusedProjectChange])
+
+  useImperativeHandle(ref, () => ({
+    focusProject: handleSelectProject,
+    stepToProject: handleStepToProject,
+    requestClose,
+  }), [handleSelectProject, handleStepToProject, requestClose])
 
   return (
     <Canvas
@@ -160,6 +186,7 @@ export function AtomScene({ orbitPaused = false, isMobile = false, onFocusChange
                 onRequestClose={requestClose}
                 onCardExitComplete={handleCardExitComplete}
                 isMobile={isMobile}
+                orbitsPaused={orbitPaused}
               />
             )
           })}
@@ -190,4 +217,4 @@ export function AtomScene({ orbitPaused = false, isMobile = false, onFocusChange
       />
     </Canvas>
   )
-}
+})

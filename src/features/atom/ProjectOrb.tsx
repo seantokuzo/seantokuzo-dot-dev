@@ -22,9 +22,12 @@ interface ProjectOrbProps {
   onRequestClose: () => void
   onCardExitComplete: () => void
   isMobile?: boolean
+  orbitsPaused?: boolean
 }
 
 const ORB_RADIUS = 0.18
+const ORB_RADIUS_MOBILE = 0.24
+const HITBOX_RADIUS_MOBILE = 0.4
 const HOVER_SCALE = 1.4
 const BASE_SCALE = 1
 const TRAIL_LENGTH = 6
@@ -88,6 +91,7 @@ export function ProjectOrb({
   onRequestClose,
   onCardExitComplete,
   isMobile = false,
+  orbitsPaused = false,
 }: ProjectOrbProps) {
   const groupRef = useRef<Group>(null)
   const trailRef = useRef<THREE.InstancedMesh>(null)
@@ -112,6 +116,7 @@ export function ProjectOrb({
   const trailFilled = useRef(0)
   const trailDummy = useMemo(() => new THREE.Object3D(), [])
 
+  const effectiveRadius = isMobile ? ORB_RADIUS_MOBILE : ORB_RADIUS
   const orbColor = project.color
 
   // Create material imperatively with onBeforeCompile pre-wired
@@ -131,7 +136,9 @@ export function ProjectOrb({
   useFrame((state, delta) => {
     if (!groupRef.current) return
 
-    angleRef.current += speed * delta
+    if (!orbitsPaused) {
+      angleRef.current += speed * delta
+    }
     const x = Math.cos(angleRef.current) * orbitRadius
     const z = Math.sin(angleRef.current) * orbitRadius
     groupRef.current.position.set(x, 0, z)
@@ -206,10 +213,30 @@ export function ProjectOrb({
             document.body.style.cursor = 'auto'
           }}
         >
-          <sphereGeometry args={[ORB_RADIUS, 20, 20]} />
+          <sphereGeometry args={[effectiveRadius, 20, 20]} />
         </mesh>
+        {isMobile && (
+          <mesh
+            onClick={(e) => {
+              e.stopPropagation()
+              onSelect(project)
+            }}
+            onPointerOver={(e) => {
+              e.stopPropagation()
+              setHovered(true)
+              document.body.style.cursor = 'pointer'
+            }}
+            onPointerOut={() => {
+              setHovered(false)
+              document.body.style.cursor = 'auto'
+            }}
+          >
+            <sphereGeometry args={[HITBOX_RADIUS_MOBILE, 8, 8]} />
+            <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+          </mesh>
+        )}
         <mesh visible={isHighlighted} rotation={RING_ROTATION}>
-          <ringGeometry args={[ORB_RADIUS + 0.04, ORB_RADIUS + 0.08, 32]} />
+          <ringGeometry args={[effectiveRadius + 0.04, effectiveRadius + 0.08, 32]} />
           <meshBasicMaterial
             color={orbColor}
             transparent
