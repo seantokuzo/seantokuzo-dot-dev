@@ -16,7 +16,7 @@ export function ElectronOrbit({
   opacity = 0.25,
 }: ElectronOrbitProps) {
   const points = useMemo(() => {
-    const segments = 128
+    const segments = 64
     const pts: [number, number, number][] = []
     for (let i = 0; i <= segments; i++) {
       const angle = (i / segments) * Math.PI * 2
@@ -25,8 +25,11 @@ export function ElectronOrbit({
     return pts
   }, [radius])
 
+  // Memoize Euler to avoid allocation every render
+  const tiltEuler = useMemo(() => new THREE.Euler(...tilt), [tilt])
+
   return (
-    <group rotation={new THREE.Euler(...tilt)}>
+    <group rotation={tiltEuler}>
       <Line
         points={points}
         color={color}

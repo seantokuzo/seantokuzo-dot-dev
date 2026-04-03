@@ -23,10 +23,9 @@ export class CVManager {
    * Initialize models (can be slow — downloads WASM + model files).
    */
   async init(): Promise<void> {
-    await Promise.all([
-      this.handTracker.init(),
-      this.faceTracker.init(),
-    ])
+    // Face tracker disabled — model download (~10MB) skipped until face actions are wired up
+    // await this.faceTracker.init()
+    await this.handTracker.init()
   }
 
   /**
@@ -62,18 +61,17 @@ export class CVManager {
    * Callback receives hand landmarks for overlay drawing.
    */
   /**
-   * Start processing frames at 25fps total tick rate.
-   * Hand runs 3 of every 5 ticks (~15fps), face runs 2 of every 5 ticks (~10fps).
-   * Never both in the same frame.
+   * Start processing frames at 15fps (hand only).
+   * Face tracker disabled — re-enable by restoring the original 25fps alternating pattern.
    */
   startTracking(onFrame?: FrameCallback): void {
     if (!this.video) return
     this.onFrame = onFrame ?? null
 
-    // 25fps tick rate = 40ms interval
-    // Pattern over 5 ticks: H, H, F, H, F → 3 hand (15fps) + 2 face (10fps)
-    const TICK_INTERVAL = 1000 / 25
-    const pattern: ('hand' | 'face')[] = ['hand', 'hand', 'face', 'hand', 'face']
+    // 15fps hand-only. To re-enable face: restore 25fps (1000/25) with
+    // pattern ['hand', 'hand', 'face', 'hand', 'face']
+    const TICK_INTERVAL = 1000 / 15
+    const pattern: ('hand' | 'face')[] = ['hand']
     let tickCount = 0
 
     this.timer = setInterval(() => {
