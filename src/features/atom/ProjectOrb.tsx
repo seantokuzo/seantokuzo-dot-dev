@@ -220,7 +220,7 @@ export function ProjectOrb({
 
         {/* Telemetry label — hidden when project card is visible */}
         {!showCard && (
-          <Html position={[0.35, 0.15, 0]} center={false}>
+          <Html position={[0.35, 0.15, 0]} center={false} zIndexRange={[50, 0]}>
             <button
               type="button"
               className={`${styles.telemetryLabel} ${isHighlighted ? styles.hovered : ''}`}

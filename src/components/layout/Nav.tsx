@@ -71,7 +71,7 @@ export function Nav() {
 
   return (
     <>
-      <nav className={`${styles.nav} ${scrolled ? styles.navScrolled : ''}`}>
+      <nav className={`${styles.nav} ${scrolled && !orbMenuOpen ? styles.navScrolled : ''}`}>
         <NavLink to="/" className={styles.logo} onClick={closeOrbMenu}>
           sean<span className={styles.logoAccent}>tokuzo</span>
         </NavLink>
