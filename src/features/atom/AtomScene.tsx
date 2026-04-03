@@ -32,7 +32,7 @@ const ORBITS_MOBILE: OrbitConfig[] = [
 
 const CAMERA_Y = 3
 const CAMERA_Z_DESKTOP = 8
-const ORB_RADIUS = 0.18 // electron radius — must match ProjectOrb
+const ORB_RADIUS_MOBILE = 0.24
 
 /**
  * Compute camera Z so all orbits + electrons fit within the viewport width.
@@ -43,11 +43,12 @@ function computeFitCameraZ(
   orbits: OrbitConfig[],
   fov: number,
   cameraY: number,
+  orbRadius: number,
   padding = 1.1
 ): number {
   const aspect = window.innerWidth / window.innerHeight || 1
   const hFovHalf = Math.atan(aspect * Math.tan((fov * Math.PI) / 360))
-  const maxExtent = Math.max(...orbits.map((o) => o.radius)) + ORB_RADIUS
+  const maxExtent = Math.max(...orbits.map((o) => o.radius)) + orbRadius
   const requiredDist = (maxExtent * padding) / Math.tan(hFovHalf)
   return Math.sqrt(Math.max(1, requiredDist * requiredDist - cameraY * cameraY))
 }
@@ -72,7 +73,7 @@ export const AtomScene = forwardRef<AtomSceneHandle, AtomSceneProps>(function At
   const orbits = isMobile ? ORBITS_MOBILE : ORBITS_DESKTOP
   const cameraFov = isMobile ? 60 : 50
   const cameraZ = isMobile
-    ? computeFitCameraZ(orbits, cameraFov, CAMERA_Y)
+    ? computeFitCameraZ(orbits, cameraFov, CAMERA_Y, ORB_RADIUS_MOBILE)
     : CAMERA_Z_DESKTOP
   const polarAngle = Math.acos(CAMERA_Y / Math.sqrt(CAMERA_Y ** 2 + cameraZ ** 2))
 
@@ -186,7 +187,7 @@ export const AtomScene = forwardRef<AtomSceneHandle, AtomSceneProps>(function At
                 onRequestClose={requestClose}
                 onCardExitComplete={handleCardExitComplete}
                 isMobile={isMobile}
-                orbitsPaused={orbitPaused}
+                orbitPaused={orbitPaused}
               />
             )
           })}

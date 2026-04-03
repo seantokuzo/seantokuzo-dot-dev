@@ -55,6 +55,7 @@ export function AtomPage() {
   const handleStepNext = useCallback(() => {
     if (!focusedProject) return
     const idx = projects.findIndex((p) => p.id === focusedProject.id)
+    if (idx < 0) return
     const next = projects[(idx + 1) % projects.length]
     sceneRef.current?.stepToProject(next)
   }, [focusedProject])
@@ -62,6 +63,7 @@ export function AtomPage() {
   const handleStepPrev = useCallback(() => {
     if (!focusedProject) return
     const idx = projects.findIndex((p) => p.id === focusedProject.id)
+    if (idx < 0) return
     const prev = projects[(idx - 1 + projects.length) % projects.length]
     sceneRef.current?.stepToProject(prev)
   }, [focusedProject])
@@ -118,6 +120,7 @@ export function AtomPage() {
                 onClose={handleStepClose}
               />
               <button
+                type="button"
                 className={`${styles.listViewBtn} ${sceneFocused ? styles.controlsHidden : ''}`}
                 onClick={() => setViewMode('list')}
                 aria-label="Switch to list view"

@@ -22,7 +22,7 @@ interface ProjectOrbProps {
   onRequestClose: () => void
   onCardExitComplete: () => void
   isMobile?: boolean
-  orbitsPaused?: boolean
+  orbitPaused?: boolean
 }
 
 const ORB_RADIUS = 0.18
@@ -91,7 +91,7 @@ export function ProjectOrb({
   onRequestClose,
   onCardExitComplete,
   isMobile = false,
-  orbitsPaused = false,
+  orbitPaused = false,
 }: ProjectOrbProps) {
   const groupRef = useRef<Group>(null)
   const trailRef = useRef<THREE.InstancedMesh>(null)
@@ -136,7 +136,7 @@ export function ProjectOrb({
   useFrame((state, delta) => {
     if (!groupRef.current) return
 
-    if (!orbitsPaused) {
+    if (!orbitPaused) {
       angleRef.current += speed * delta
     }
     const x = Math.cos(angleRef.current) * orbitRadius

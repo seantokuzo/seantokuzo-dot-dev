@@ -20,6 +20,7 @@ export function ProjectStepper({
     return (
       <div className={styles.stepper} role="navigation" aria-label="Project navigation">
         <button
+          type="button"
           className={styles.exploreBtn}
           onClick={onExplore}
           aria-label="Explore projects"
@@ -33,6 +34,7 @@ export function ProjectStepper({
   return (
     <div className={styles.stepper} role="navigation" aria-label="Project navigation">
       <button
+        type="button"
         className={styles.navBtn}
         onClick={onPrev}
         aria-label="Previous project"
@@ -41,6 +43,7 @@ export function ProjectStepper({
       </button>
       <span className={styles.projectTitle}>{focusedProject.title}</span>
       <button
+        type="button"
         className={styles.navBtn}
         onClick={onNext}
         aria-label="Next project"
@@ -48,6 +51,7 @@ export function ProjectStepper({
         <span aria-hidden="true">&rarr;</span>
       </button>
       <button
+        type="button"
         className={styles.closeBtn}
         onClick={onClose}
         aria-label="Close project view"
