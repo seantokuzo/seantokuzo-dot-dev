@@ -16,7 +16,7 @@ export interface Project {
   github?: string
   isPrivate: boolean
   status: ProjectStatus
-  media?: ProjectMedia | null
+  media: ProjectMedia | null
   featured: boolean
   color: string
 }
