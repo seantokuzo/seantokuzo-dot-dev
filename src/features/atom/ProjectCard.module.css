@@ -1,0 +1,133 @@
+.card {
+  position: relative;
+  width: 380px;
+  max-width: 90vw;
+  background: rgba(10, 22, 40, 0.92);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--color-turquoise-30);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  box-shadow:
+    0 0 40px rgba(0, 245, 212, 0.12),
+    0 8px 32px rgba(0, 0, 0, 0.5);
+  pointer-events: auto;
+
+  /* Orbit-in from behind the electron — pivots on left edge */
+  transform-origin: left center;
+  animation: cardEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.card.exiting {
+  /* Exit swings to opposite side — pivots on right edge */
+  transform-origin: right center;
+  animation: cardExit 0.4s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+}
+
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: perspective(800px) rotateY(-80deg) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(800px) rotateY(0deg) scale(1);
+  }
+}
+
+@keyframes cardExit {
+  from {
+    opacity: 1;
+    transform: perspective(800px) rotateY(0deg) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: perspective(800px) rotateY(80deg) scale(0.85);
+  }
+}
+
+.close {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  background: none;
+  border: none;
+  font-size: var(--text-2xl);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  line-height: 1;
+  padding: var(--space-xs);
+  transition: color var(--transition-fast);
+}
+
+.close:hover {
+  color: var(--color-text-primary);
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: var(--text-xl);
+  background: linear-gradient(
+    135deg,
+    var(--color-ocean-turquoise),
+    var(--color-accent-bioluminescent)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: var(--space-sm);
+}
+
+.description {
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  margin-bottom: var(--space-md);
+}
+
+.tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--color-ocean-aqua);
+  background: var(--color-tag-bg);
+  border: 1px solid var(--color-tag-border);
+  border-radius: var(--radius-full);
+  padding: 2px var(--space-sm);
+}
+
+.links {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.link {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-accent-bioluminescent);
+  transition: color var(--transition-fast);
+}
+
+.link:hover {
+  color: var(--color-text-primary);
+}
+
+@media (max-width: 768px) {
+  .card {
+    width: 320px;
+    padding: var(--space-lg);
+  }
+
+  .title {
+    font-size: var(--text-lg);
+  }
+
+  .description {
+    font-size: var(--text-xs);
+  }
+}

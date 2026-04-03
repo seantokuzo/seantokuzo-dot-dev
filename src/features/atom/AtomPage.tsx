@@ -21,8 +21,11 @@ export function AtomPage() {
   const [viewMode, setViewMode] = useState<ViewMode>(
     canRender3D ? 'atom' : 'list'
   )
+  // Selection state — only used for list view overlay
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [orbitPaused, setOrbitPaused] = useState(false)
+  // Track whether the 3D scene is focused on an electron
+  const [sceneFocused, setSceneFocused] = useState(false)
 
   const handleSelectProject = useCallback((project: Project) => {
     setSelectedProject(project)
@@ -43,8 +46,8 @@ export function AtomPage() {
 
   return (
     <div className={styles.page}>
-      {/* View toggle + CV toggle */}
-      <div className={styles.controls}>
+      {/* View toggle + CV toggle — fade during electron focus */}
+      <div className={`${styles.controls} ${sceneFocused ? styles.controlsHidden : ''}`}>
         {canRender3D && (
           <button
             className={`${styles.toggle} ${viewMode === 'atom' ? styles.active : ''}`}
@@ -65,8 +68,12 @@ export function AtomPage() {
       {/* Main content */}
       {viewMode === 'atom' && canRender3D ? (
         <div className={styles.canvasWrap}>
-          <AtomScene onSelectProject={handleSelectProject} onClearSelection={handleCloseOverlay} orbitPaused={orbitPaused} />
-          <div className={styles.heroText}>
+          <AtomScene
+            orbitPaused={orbitPaused}
+            isMobile={isMobile}
+            onFocusChange={setSceneFocused}
+          />
+          <div className={`${styles.heroText} ${sceneFocused ? styles.heroHidden : ''}`}>
             <h1 className={styles.title}>Sean Simpson</h1>
             <p className={styles.subtitle}>
               Full-Stack Developer · Creative Technologist
@@ -77,8 +84,8 @@ export function AtomPage() {
         <ProjectList onSelectProject={handleSelectProject} />
       )}
 
-      {/* Project detail overlay */}
-      {selectedProject && (
+      {/* Project detail overlay — list view only */}
+      {selectedProject && viewMode === 'list' && (
         <ProjectOverlay
           project={selectedProject}
           onClose={handleCloseOverlay}
