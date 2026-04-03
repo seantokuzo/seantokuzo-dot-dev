@@ -1,11 +1,6 @@
-import { projects, type Project, type ProjectStatus } from '../../data/projects'
+import { projects, STATUS_LABELS, type Project } from '../../data/projects'
+import { LockIcon } from '../../components/ui/LockIcon'
 import styles from './ProjectList.module.css'
-
-const STATUS_LABELS: Record<ProjectStatus, string> = {
-  'released': 'Released',
-  'in-development': 'In Development',
-  'early-stage': 'Early Stage',
-}
 
 interface ProjectListProps {
   onSelectProject: (project: Project) => void
@@ -26,21 +21,7 @@ export function ProjectList({ onSelectProject }: ProjectListProps) {
             <div className={styles.titleRow}>
               <h3 className={styles.title}>{project.title}</h3>
               {project.isPrivate && (
-                <svg
-                  className={styles.lockIcon}
-                  width="13"
-                  height="13"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-label="Private repository"
-                >
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
+                <LockIcon size={13} strokeWidth={2.5} className={styles.lockIcon} />
               )}
               <span className={styles.statusBadge} data-status={project.status}>
                 {STATUS_LABELS[project.status]}

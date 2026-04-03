@@ -2,7 +2,8 @@ import { bio, socialLinks } from '../../data/bio'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { skills, skillCategories, type SkillCategory } from '../../data/skills'
 import { experience } from '../../data/experience'
-import { projects, type ProjectStatus } from '../../data/projects'
+import { projects, STATUS_LABELS } from '../../data/projects'
+import { LockIcon } from '../../components/ui/LockIcon'
 import styles from './AboutPage.module.css'
 
 function BioSection() {
@@ -64,12 +65,6 @@ function SkillsSection() {
   )
 }
 
-const STATUS_LABELS: Record<ProjectStatus, string> = {
-  'released': 'Released',
-  'in-development': 'In Development',
-  'early-stage': 'Early Stage',
-}
-
 function ProjectsSection() {
   const featured = projects.filter((p) => p.featured)
 
@@ -82,10 +77,7 @@ function ProjectsSection() {
             <div className={styles.projectHeader}>
               <h3 className={styles.projectTitle}>{project.title}</h3>
               {project.isPrivate && (
-                <svg className={styles.lockIcon} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-                </svg>
+                <LockIcon className={styles.lockIcon} />
               )}
               <span className={styles.statusBadge} data-status={project.status}>
                 {STATUS_LABELS[project.status]}

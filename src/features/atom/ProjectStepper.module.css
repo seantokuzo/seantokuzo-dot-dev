@@ -92,7 +92,8 @@
   font-family: var(--font-heading);
   font-size: var(--text-sm);
   color: var(--color-text-primary);
-  min-width: 8rem;
+  flex: 1;
+  min-width: 0;
   text-align: center;
   justify-content: center;
   white-space: nowrap;

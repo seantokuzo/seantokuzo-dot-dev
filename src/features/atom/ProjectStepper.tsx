@@ -1,11 +1,6 @@
-import type { Project, ProjectStatus } from '../../data/projects'
+import { STATUS_LABELS, type Project } from '../../data/projects'
+import { LockIcon } from '../../components/ui/LockIcon'
 import styles from './ProjectStepper.module.css'
-
-const STATUS_LABELS: Record<ProjectStatus, string> = {
-  'released': 'Released',
-  'in-development': 'In Development',
-  'early-stage': 'Early Stage',
-}
 
 interface ProjectStepperProps {
   focusedProject: Project | null
@@ -49,21 +44,7 @@ export function ProjectStepper({
       </button>
       <span className={styles.projectTitle}>
         {focusedProject.isPrivate && (
-          <svg
-            className={styles.lockIcon}
-            width="12"
-            height="12"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-label="Private repository"
-          >
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-          </svg>
+          <LockIcon size={12} strokeWidth={2.5} className={styles.lockIcon} />
         )}
         {focusedProject.title}
         <span className={styles.separator} aria-hidden="true">&middot;</span>

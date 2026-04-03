@@ -21,6 +21,12 @@ export interface Project {
   color: string
 }
 
+export const STATUS_LABELS: Record<ProjectStatus, string> = {
+  'released': 'Released',
+  'in-development': 'In Development',
+  'early-stage': 'Early Stage',
+}
+
 export const projects: Project[] = [
   {
     id: 'seantokuzo-dev',
