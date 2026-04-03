@@ -7,7 +7,6 @@ import styles from './Nav.module.css'
 
 const navItems = [
   { to: '/', label: 'Home' },
-  { to: '/world', label: 'World' },
   { to: '/about', label: 'About' },
 ]
 
