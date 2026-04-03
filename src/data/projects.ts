@@ -1,12 +1,22 @@
+export type ProjectStatus = 'released' | 'in-development' | 'early-stage'
+
+export interface ProjectMedia {
+  type: 'image' | 'video' | 'gif'
+  src: string
+  alt?: string
+}
+
 export interface Project {
   id: string
   title: string
   description: string
-  longDescription?: string
+  longDescription: string
   tech: string[]
   url?: string
   github?: string
-  image?: string
+  isPrivate: boolean
+  status: ProjectStatus
+  media?: ProjectMedia | null
   featured: boolean
   color: string
 }
@@ -18,66 +28,148 @@ export const projects: Project[] = [
     description:
       'This portfolio site — 3D atom model, isometric game world, computer vision controls. The implementation IS the portfolio.',
     longDescription:
-      'A fully interactive portfolio built with React Three Fiber, featuring a 3D atom model as the home page, an isometric Hawaiian village game world, and computer vision gesture controls powered by MediaPipe. Every page showcases a different technical capability.',
+      'A fully interactive portfolio built with React Three Fiber, featuring a 3D atom model as the home page, an isometric Hawaiian village game world, and computer vision gesture controls powered by MediaPipe. Every page showcases a different technical capability — from physics-based game environments to real-time hand tracking that translates gestures into application controls.',
     tech: ['React', 'Three.js', 'TypeScript', 'MediaPipe', 'Rapier', 'Vite'],
     url: 'https://seantokuzo.dev',
     github: 'https://github.com/seantokuzo/seantokuzo-dot-dev',
+    isPrivate: false,
+    status: 'in-development',
+    media: null,
     featured: true,
     color: '#c084fc',
   },
   {
-    id: 'cv-gesture-engine',
-    title: 'CV Gesture Engine',
+    id: 'u-suck-at-money',
+    title: 'U Suck At Money',
     description:
-      'Real-time hand and face tracking with MediaPipe, translating gestures into application controls at 15fps.',
+      'Full-stack personal finance command center — budgeting, spending analysis, retirement tracking, investments, savings goals, and wishlist management in one place.',
     longDescription:
-      'A computer vision pipeline that processes webcam input through MediaPipe hand and face landmark models, mapping detected gestures to discrete application actions. Runs at 15fps for hands and 10fps for face, with intelligent throttling to prevent frame drops.',
-    tech: ['MediaPipe', 'TypeScript', 'WebRTC', 'Canvas API'],
+      'A comprehensive personal finance application designed to replace scattered spreadsheets and multiple financial tools. Serves as a unified hub where users can track budgets and spending patterns, monitor 401k/HSA retirement contributions, view investment portfolios, set savings goals, plan for major life events, and maintain a purchase wishlist. Built with a modern full-stack architecture emphasizing type safety end-to-end — from database schema through API to UI components.',
+    tech: [
+      'Next.js',
+      'React',
+      'TypeScript',
+      'Tailwind CSS',
+      'Zustand',
+      'TanStack Query',
+      'Neon Postgres',
+      'Drizzle ORM',
+      'NextAuth',
+    ],
+    isPrivate: true,
+    status: 'in-development',
+    media: null,
     featured: true,
-    color: '#818cf8',
+    color: '#34d399',
   },
   {
-    id: 'island-world',
-    title: 'Island World',
+    id: 'major-tom',
+    title: 'Major Tom',
     description:
-      'Isometric Hawaiian village game world with Rapier physics, explorable NPCs, and interactive environment.',
+      'Native iOS app for remote control of Claude Code sessions — approve tool calls from anywhere, with a gamified pixel-art office where AI agents come to life.',
     longDescription:
-      'An isometric game environment built with React Three Fiber and Rapier physics. Features a Hawaiian-themed village with explorable areas, interactive NPCs, and physics-based interactions. Serves as the /world route of the portfolio.',
-    tech: ['React Three Fiber', 'Rapier', 'TypeScript', 'Zustand'],
+      'A sophisticated remote control system for AI agent orchestration, allowing developers to manage Claude Code CLI sessions and VSCode extensions from their iPhone with full approval authority over tool calls. Features a pixel-art office environment built with SpriteKit where orchestrator and subagent characters animate based on work state — walking to desks when active, hanging in the break room when idle. The architecture spans a Swift/SwiftUI iOS app, a Node.js/Fastify relay server communicating over WebSocket, and a VSCode extension target.',
+    tech: [
+      'Swift',
+      'SwiftUI',
+      'SpriteKit',
+      'Node.js',
+      'TypeScript',
+      'Fastify',
+      'WebSocket',
+      'Claude Agent SDK',
+    ],
+    github: 'https://github.com/seantokuzo/major-tom',
+    isPrivate: false,
+    status: 'in-development',
+    media: null,
     featured: true,
-    color: '#7c3aed',
+    color: '#60a5fa',
   },
   {
-    id: 'shader-lab',
-    title: 'Shader Lab',
+    id: 'roi-gen',
+    title: 'ROI-GEN',
     description:
-      'Collection of custom GLSL shaders — procedural planets, ocean surfaces, and bioluminescent effects.',
+      'AI-powered autonomous trading platform with human-in-the-loop approval, multi-strategy support, and real-time portfolio tracking via Alpaca.',
     longDescription:
-      'A creative coding playground for GLSL shader development. Includes procedural terrain generation, ocean wave simulation, atmospheric scattering, and bioluminescent particle effects. Many of these shaders power visuals throughout the portfolio.',
-    tech: ['GLSL', 'Three.js', 'WebGL', 'TypeScript'],
+      'An autonomous AI trading system that democratizes algorithmic trading by combining real-time market data with multi-LLM intelligence. Generates actionable trading signals from multiple AI sources (OpenAI, Anthropic, Cohere, Google), executes within strict safety guardrails including position limits, daily loss caps, and trade frequency restrictions. Supports paper trading for risk-free strategy validation and provides a chat interface for natural language portfolio analysis alongside traditional signal approval workflows.',
+    tech: [
+      'Python',
+      'FastAPI',
+      'React',
+      'TypeScript',
+      'PostgreSQL',
+      'Redis',
+      'LangChain',
+      'Alpaca API',
+      'Docker',
+    ],
+    isPrivate: true,
+    status: 'in-development',
+    media: null,
     featured: true,
+    color: '#f59e0b',
+  },
+  {
+    id: 'face-fling',
+    title: 'Face-Fling',
+    description:
+      'Native macOS app that scans photo folders, detects and clusters faces with ML, and lets you organize your entire library by the people in them.',
+    longDescription:
+      'Solves the problem of finding specific photos in large digital archives. Recursively scans folders, detects all faces using state-of-the-art dlib ResNet models, clusters similar-looking faces automatically, and presents them in an intuitive interface for identification and organization. Intelligently handles aging faces across decades of photos by supporting cluster merging, and exports matched photos with smart naming. Everything runs locally with zero cloud dependency.',
+    tech: ['C++', 'Qt 6', 'dlib', 'SQLite', 'CMake'],
+    github: 'https://github.com/seantokuzo/face-fling',
+    isPrivate: false,
+    status: 'early-stage',
+    media: null,
+    featured: true,
+    color: '#f472b6',
+  },
+  {
+    id: 'seantokuzo-mcp',
+    title: 'Kuzo MCP',
+    description:
+      'MCP server and CLI tool that automates GitHub pull request management — gives AI assistants programmatic PR control with a personality-driven terminal UI.',
+    longDescription:
+      'A comprehensive GitHub automation platform built on the Model Context Protocol, enabling Claude and other AI assistants to programmatically manage pull requests. Provides multiple interfaces: a powerful MCP server for AI integration, an interactive CLI with three personality modes (chaotic, professional, zen), and a webhook server for auto-updating PR descriptions on push events. Integrates GitHub API operations with JIRA ticket management and includes environment-driven configuration for seamless team customization.',
+    tech: [
+      'Node.js',
+      'TypeScript',
+      'MCP SDK',
+      'Octokit',
+      'Express',
+      'Commander',
+      'Zod',
+    ],
+    github: 'https://github.com/seantokuzo/seantokuzo-mcp',
+    isPrivate: false,
+    status: 'released',
+    media: null,
+    featured: false,
     color: '#a78bfa',
   },
   {
-    id: 'wave-function',
-    title: 'Wave Function Collapse',
+    id: 'the-bach',
+    title: 'The Bach',
     description:
-      'Procedural level generation using the Wave Function Collapse algorithm for tilemap-based worlds.',
+      'Bachelor/bachelorette party planning platform with real-time collaboration, social games, expense tracking, and a mobile-first experience.',
     longDescription:
-      'Implementation of the Wave Function Collapse algorithm for generating coherent tilemap layouts. Used to procedurally create village layouts and terrain patterns in the game world section of the portfolio.',
-    tech: ['TypeScript', 'Canvas API', 'Algorithms'],
-    featured: false,
-    color: '#6d28d9',
-  },
-  {
-    id: 'midi-visualizer',
-    title: 'MIDI Visualizer',
-    description:
-      'Real-time 3D visualization of MIDI input using Web MIDI API and Three.js particle systems.',
-    longDescription:
-      'Connects to MIDI controllers via the Web MIDI API and translates note data into real-time 3D particle animations. Each MIDI channel maps to a different visual layer with configurable color palettes and physics behaviors.',
-    tech: ['Web MIDI', 'Three.js', 'TypeScript', 'Web Audio'],
-    featured: false,
-    color: '#4f46e5',
+      'A comprehensive party planning and entertainment platform for coordinating bachelor and bachelorette parties. Combines essential planning features like itineraries and expense splitting with interactive social games (Quiplash-style), real-time chat with reactions, and member management. Spans mobile (React Native), web, and API layers within a Turborepo monorepo. Features push notifications, offline chat support, WebAuthn authentication, and a complete design system — all deployed to Fly.io with Neon Postgres and Upstash Redis.',
+    tech: [
+      'React Native',
+      'TypeScript',
+      'Hono',
+      'Socket.IO',
+      'Drizzle ORM',
+      'PostgreSQL',
+      'Redis',
+      'Turborepo',
+      'Docker',
+    ],
+    isPrivate: true,
+    status: 'in-development',
+    media: null,
+    featured: true,
+    color: '#fb923c',
   },
 ]
