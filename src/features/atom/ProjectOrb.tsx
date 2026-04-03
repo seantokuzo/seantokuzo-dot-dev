@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useMemo } from 'react'
+import { useRef, useState, useEffect, useMemo, type MutableRefObject } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Html } from '@react-three/drei'
 import type { Group } from 'three'
@@ -25,7 +25,7 @@ const HOVER_DISPLACE_AMP = 0.03
 
 function createOrbMaterial(
   color: string,
-  shaderRef: React.MutableRefObject<{ uniforms: Record<string, { value: number }> } | null>
+  shaderRef: MutableRefObject<{ uniforms: Record<string, { value: number }> } | null>
 ) {
   const mat = new THREE.MeshStandardMaterial({
     color: new THREE.Color(color),
@@ -198,8 +198,17 @@ export function ProjectOrb({
         </mesh>
         <Html position={[0.35, 0.15, 0]} center={false}>
           <button
+            type="button"
             className={`${styles.telemetryLabel} ${isHighlighted ? styles.hovered : ''}`}
             onClick={() => onSelect(project)}
+            onPointerEnter={() => {
+              setHovered(true)
+              document.body.style.cursor = 'pointer'
+            }}
+            onPointerLeave={() => {
+              setHovered(false)
+              document.body.style.cursor = 'auto'
+            }}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
             aria-label={`View ${project.title}${project.featured ? ' (featured project)' : ''}`}

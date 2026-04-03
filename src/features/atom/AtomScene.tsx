@@ -32,6 +32,7 @@ export function AtomScene({ onSelectProject, onClearSelection, orbitPaused = fal
   return (
     <Canvas
       shadows
+      // Lower DPR cap than app default [1,2] — shadow-heavy scene with animated meshes
       dpr={[1, 1.5]}
       camera={{ position: [0, 3, 8], fov: 50 }}
       gl={{ antialias: true, alpha: true }}

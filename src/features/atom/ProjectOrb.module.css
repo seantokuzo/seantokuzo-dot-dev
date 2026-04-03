@@ -37,7 +37,7 @@
 }
 
 .labelText {
-  font-family: var(--font-body), 'Inter', sans-serif;
+  font-family: var(--font-primary), 'Inter', sans-serif;
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.1em;
@@ -46,7 +46,7 @@
 }
 
 .featuredTag {
-  font-family: var(--font-body), 'Inter', sans-serif;
+  font-family: var(--font-primary), 'Inter', sans-serif;
   font-size: 7px;
   font-weight: 700;
   letter-spacing: 0.15em;
