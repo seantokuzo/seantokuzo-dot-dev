@@ -1,42 +1,47 @@
 import { useState, useCallback, useMemo, useRef } from 'react'
-import { useIsMobile } from '../../hooks/useMediaQuery'
+import { Canvas, useFrame } from '@react-three/fiber'
+import type { Group } from 'three'
+import { useIsMobile, useIsTablet } from '../../hooks/useMediaQuery'
 import { useDeviceCapabilities } from '../../hooks/useDeviceCapabilities'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useGestureControls } from '../../hooks/useGestureControls'
 import { AtomScene, type AtomSceneHandle } from './AtomScene'
 import { ProjectList } from './ProjectList'
-import { ProjectOverlay } from './ProjectOverlay'
 import { CVToggle } from './CVToggle'
 import { ProjectStepper } from './ProjectStepper'
+import { Starfield } from './Starfield'
 import { projects, type Project } from '../../data/projects'
 import styles from './AtomPage.module.css'
 
 type ViewMode = 'atom' | 'list'
 
+function RotatingStarfield() {
+  const ref = useRef<Group>(null)
+  useFrame((_, delta) => {
+    if (ref.current) ref.current.rotation.y += delta * 0.015
+  })
+  return (
+    <group ref={ref}>
+      <Starfield />
+    </group>
+  )
+}
+
 export function AtomPage() {
   useDocumentTitle('Sean Simpson — seantokuzo.dev')
   const isMobile = useIsMobile()
+  const isTablet = useIsTablet()
   const { hasWebGL2, hasCamera } = useDeviceCapabilities()
   const canRender3D = hasWebGL2
 
   const [viewMode, setViewMode] = useState<ViewMode>(
     canRender3D ? 'atom' : 'list'
   )
-  // Selection state — only used for list view overlay
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [orbitPaused, setOrbitPaused] = useState(false)
   // Track whether the 3D scene is focused on an electron
   const [sceneFocused, setSceneFocused] = useState(false)
   const sceneRef = useRef<AtomSceneHandle>(null)
   const [focusedProject, setFocusedProject] = useState<Project | null>(null)
-
-  const handleSelectProject = useCallback((project: Project) => {
-    setSelectedProject(project)
-  }, [])
-
-  const handleCloseOverlay = useCallback(() => {
-    setSelectedProject(null)
-  }, [])
 
   // CV gesture controls — desktop only, 3D view only
   const gestureOptions = useMemo(
@@ -78,21 +83,19 @@ export function AtomPage() {
 
   return (
     <div className={styles.page}>
-      {/* View toggle + CV toggle — fade during electron focus */}
-      <div className={`${styles.controls} ${sceneFocused ? styles.controlsHidden : ''}`}>
-        {canRender3D && !(isMobile && viewMode === 'atom') && (
+      {/* 3D View toggle — only shows in list view */}
+      {viewMode === 'list' && canRender3D && (
+        <div className={styles.viewSwitchTop}>
           <button
-            className={`${styles.toggle} ${viewMode === 'atom' ? styles.active : ''}`}
-            onClick={() => setViewMode(viewMode === 'atom' ? 'list' : 'atom')}
-            aria-label={`Switch to ${viewMode === 'atom' ? 'list' : '3D'} view`}
+            type="button"
+            className={styles.toggle}
+            onClick={() => setViewMode('atom')}
+            aria-label="Switch to 3D view"
           >
-            {viewMode === 'atom' ? '☰ List View' : '⚛ 3D View'}
+            ⚛ 3D View
           </button>
-        )}
-        {!isMobile && canRender3D && viewMode === 'atom' && hasCamera && (
-          <CVToggle />
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Main content */}
       {viewMode === 'atom' && canRender3D ? (
@@ -101,46 +104,60 @@ export function AtomPage() {
             ref={sceneRef}
             orbitPaused={orbitPaused}
             isMobile={isMobile}
+            isTablet={isTablet && !isMobile}
             onFocusChange={setSceneFocused}
             onFocusedProjectChange={handleFocusedProjectChange}
           />
+
+          {/* Hero text — always top center */}
           <div className={`${styles.heroText} ${sceneFocused ? styles.heroHidden : ''}`}>
             <h1 className={styles.title}>Sean Simpson</h1>
             <p className={styles.subtitle}>
               Full-Stack Developer · Creative Technologist
             </p>
           </div>
-          {isMobile && (
-            <div className={styles.mobileBottom}>
-              <ProjectStepper
-                focusedProject={focusedProject}
-                onExplore={handleExplore}
-                onNext={handleStepNext}
-                onPrev={handleStepPrev}
-                onClose={handleStepClose}
-              />
+
+          {/* Bottom controls — all viewport sizes */}
+          <div className={styles.bottomControls}>
+            <ProjectStepper
+              focusedProject={focusedProject}
+              onExplore={handleExplore}
+              onNext={handleStepNext}
+              onPrev={handleStepPrev}
+              onClose={handleStepClose}
+            />
+            <div className={`${styles.secondaryControls} ${sceneFocused ? styles.controlsHidden : ''}`}>
               <button
                 type="button"
-                className={`${styles.listViewBtn} ${sceneFocused ? styles.controlsHidden : ''}`}
+                className={styles.toggle}
                 onClick={() => setViewMode('list')}
                 aria-label="Switch to list view"
               >
                 ☰ List View
               </button>
+              {!isMobile && hasCamera && (
+                <CVToggle />
+              )}
             </div>
-          )}
+          </div>
         </div>
       ) : (
-        <ProjectList onSelectProject={handleSelectProject} />
+        <>
+          {canRender3D && (
+            <div className={styles.starfieldBg}>
+              <Canvas
+                camera={{ position: [0, 0, 0], fov: 75 }}
+                dpr={[1, 1.5]}
+                gl={{ antialias: false, alpha: true }}
+              >
+                <RotatingStarfield />
+              </Canvas>
+            </div>
+          )}
+          <ProjectList />
+        </>
       )}
 
-      {/* Project detail overlay — list view only */}
-      {selectedProject && viewMode === 'list' && (
-        <ProjectOverlay
-          project={selectedProject}
-          onClose={handleCloseOverlay}
-        />
-      )}
     </div>
   )
 }

@@ -6,25 +6,16 @@
   flex-direction: column;
 }
 
-/* --- Controls --- */
-.controls {
+/* --- View Switch (list view only — top center) --- */
+.viewSwitchTop {
   position: absolute;
   top: calc(var(--nav-height) + var(--space-md));
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-xs);
-  transition: opacity 0.4s ease;
 }
 
-.controlsHidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
+/* --- Toggle Button --- */
 .toggle {
   font-family: var(--font-primary);
   font-size: var(--text-sm);
@@ -40,51 +31,53 @@
     box-shadow var(--transition-fast);
 }
 
-.toggle:hover,
-.toggle.active {
+.toggle:hover {
   border-color: var(--color-ocean-turquoise);
   box-shadow: var(--shadow-glow-turquoise);
 }
 
-/* --- Mobile Bottom Stack (stepper + list view) --- */
-.mobileBottom {
+.toggle:focus-visible {
+  outline: 2px solid var(--color-ocean-turquoise);
+  outline-offset: 2px;
+}
+
+/* --- Bottom Controls (stepper + secondary) --- */
+.bottomControls {
   position: absolute;
-  bottom: var(--space-md);
+  bottom: var(--space-xl);
   left: 50%;
   transform: translateX(-50%);
   z-index: 15;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-xs);
+  gap: var(--space-md);
 }
 
-.listViewBtn {
-  font-family: var(--font-primary);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--color-purple-soft);
-  background: var(--color-bg-nav-solid);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--color-purple-30);
-  border-radius: var(--radius-full);
-  padding: var(--space-xs) var(--space-md);
-  box-shadow: var(--shadow-glow-purple);
-  cursor: pointer;
-  transition:
-    opacity 0.4s ease,
-    border-color var(--transition-fast),
-    color var(--transition-fast);
+.secondaryControls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  transition: opacity 0.4s ease;
 }
 
-.listViewBtn:hover {
-  border-color: var(--color-purple-60);
-  color: var(--color-text-primary);
+.controlsHidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
-.listViewBtn:focus-visible {
-  outline: 2px solid var(--color-purple-soft);
-  outline-offset: 2px;
+/* --- List View Starfield Background --- */
+.starfieldBg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 40%,
+    #1a1035 0%,
+    #0d0c1e 55%,
+    #060714 100%
+  );
 }
 
 /* --- 3D Canvas Wrapper --- */
@@ -103,7 +96,7 @@
 /* --- Hero Text Overlay --- */
 .heroText {
   position: absolute;
-  bottom: var(--space-4xl);
+  top: calc(var(--nav-height) + var(--space-lg));
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -158,15 +151,5 @@
 
   .subtitle {
     font-size: var(--text-base);
-  }
-
-  .heroText {
-    top: calc(var(--nav-height) + var(--space-md));
-    bottom: auto;
-  }
-
-  .controls {
-    top: auto;
-    bottom: var(--space-2xl);
   }
 }

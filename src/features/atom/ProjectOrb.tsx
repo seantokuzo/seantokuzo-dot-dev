@@ -280,14 +280,12 @@ export function ProjectOrb({
         {/* In-scene project card — appears after camera zoom-in completes */}
         {showCard && (
           <Html center>
-            <div style={isMobile ? { transform: 'translateY(80%)' } : undefined}>
-              <ProjectCard
-                project={project}
-                exiting={cardExiting}
-                onClose={onRequestClose}
-                onExitComplete={onCardExitComplete}
-              />
-            </div>
+            <ProjectCard
+              project={project}
+              exiting={cardExiting}
+              onClose={onRequestClose}
+              onExitComplete={onCardExitComplete}
+            />
           </Html>
         )}
       </group>

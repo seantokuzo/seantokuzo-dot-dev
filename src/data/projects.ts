@@ -29,22 +29,6 @@ export const STATUS_LABELS: Record<ProjectStatus, string> = {
 
 export const projects: Project[] = [
   {
-    id: 'seantokuzo-dev',
-    title: 'seantokuzo.dev',
-    description:
-      'This portfolio site — 3D atom model, isometric game world, computer vision controls. The implementation IS the portfolio.',
-    longDescription:
-      'A fully interactive portfolio built with React Three Fiber, featuring a 3D atom model as the home page, an isometric Hawaiian village game world, and computer vision gesture controls powered by MediaPipe. Every page showcases a different technical capability — from physics-based game environments to real-time hand tracking that translates gestures into application controls.',
-    tech: ['React', 'Three.js', 'TypeScript', 'MediaPipe', 'Rapier', 'Vite'],
-    url: 'https://seantokuzo.dev',
-    github: 'https://github.com/seantokuzo/seantokuzo-dot-dev',
-    isPrivate: false,
-    status: 'in-development',
-    media: null,
-    featured: true,
-    color: '#c084fc',  // soft purple
-  },
-  {
     id: 'u-suck-at-money',
     title: 'U Suck At Money',
     description:
