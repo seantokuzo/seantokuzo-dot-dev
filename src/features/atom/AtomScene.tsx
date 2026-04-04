@@ -30,8 +30,16 @@ const ORBITS_MOBILE: OrbitConfig[] = [
   { radius: 3.0, tilt: [0.6, -0.2, 0.8], speed: 0.2, color: '#38bdf8' },
 ]
 
+// Tablet: intermediate radii + moderate tilts between mobile/desktop
+const ORBITS_TABLET: OrbitConfig[] = [
+  { radius: 2.1, tilt: [0.5, 0, 0.25], speed: 0.4, color: '#a855f7' },
+  { radius: 2.8, tilt: [-0.75, 0.35, -0.15], speed: -0.3, color: '#6366f1' },
+  { radius: 3.5, tilt: [0.35, -0.25, 0.7], speed: 0.2, color: '#38bdf8' },
+]
+
 const CAMERA_Y = 3
 const CAMERA_Z_DESKTOP = 8
+const ORB_RADIUS = 0.18
 const ORB_RADIUS_MOBILE = 0.24
 
 /**
@@ -62,18 +70,20 @@ export interface AtomSceneHandle {
 interface AtomSceneProps {
   orbitPaused?: boolean
   isMobile?: boolean
+  isTablet?: boolean
   onFocusChange?: (focused: boolean) => void
   onFocusedProjectChange?: (project: Project | null) => void
 }
 
 export const AtomScene = forwardRef<AtomSceneHandle, AtomSceneProps>(function AtomScene(
-  { orbitPaused = false, isMobile = false, onFocusChange, onFocusedProjectChange },
+  { orbitPaused = false, isMobile = false, isTablet = false, onFocusChange, onFocusedProjectChange },
   ref
 ) {
-  const orbits = isMobile ? ORBITS_MOBILE : ORBITS_DESKTOP
+  const orbits = isMobile ? ORBITS_MOBILE : isTablet ? ORBITS_TABLET : ORBITS_DESKTOP
   const cameraFov = isMobile ? 60 : 50
-  const cameraZ = isMobile
-    ? computeFitCameraZ(orbits, cameraFov, CAMERA_Y, ORB_RADIUS_MOBILE)
+  const orbRadius = isMobile ? ORB_RADIUS_MOBILE : ORB_RADIUS
+  const cameraZ = isMobile || isTablet
+    ? computeFitCameraZ(orbits, cameraFov, CAMERA_Y, orbRadius)
     : CAMERA_Z_DESKTOP
   const polarAngle = Math.acos(CAMERA_Y / Math.sqrt(CAMERA_Y ** 2 + cameraZ ** 2))
 

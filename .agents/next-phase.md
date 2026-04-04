@@ -1,71 +1,38 @@
-Update all project card/overlay components to consume the new `Project` interface fields (`isPrivate`, `status`, `media`). Branch: `phase-9/project-cards-v2` off `main`.
+Phase 10 — UI Polish (continuation). Branch: `phase-10/ui-polish` (already exists, uncommitted changes in working tree).
 
-PR #13 just merged — `src/data/projects.ts` now has 7 real projects (replacing 6 placeholders) with an extended interface:
+## Context
 
-```ts
-type ProjectStatus = 'released' | 'in-development' | 'early-stage'
-interface ProjectMedia { type: 'image' | 'video' | 'gif'; src: string; alt?: string }
-interface Project {
-  // existing: id, title, description, longDescription, tech, url?, github?, featured, color
-  isPrivate: boolean       // true = no repo link, show lock icon
-  status: ProjectStatus    // badge/indicator on cards
-  media: ProjectMedia | null  // null for now, render when present
-}
-```
+Read memory file `project_phase10_canvas_borders.md` for full state. TL;DR:
 
-Private repos (u-suck-at-money, roi-gen, the-bach) have `isPrivate: true` and no `github` URL.
-Public repos (major-tom, face-fling, seantokuzo-mcp) have `isPrivate: false` and a `github` URL.
+The list view card borders use per-card `<canvas>` elements with a rAF loop drawing noise-distorted rounded-rect borders. The shape alignment is correct (rounded rect perimeter sampling), but:
 
-## 4 Tickets — Parallelize Wave 1 (1-3), then Wave 2 (4)
+1. **Scroll stutters** — animation janks on scroll. Likely causes: rAF doing `getBoundingClientRect()` per frame per card (forces layout), or canvas resize thrashing. Investigate and fix.
+2. **Visual effect is weak** — needs to feel like the Nucleus electrification (`src/features/atom/Nucleus.tsx`). The sine-wave pseudo-noise looks too regular. Consider porting the GLSL simplex noise to JS, or using a proper noise implementation.
+3. **Glow not dramatic enough** — shadowBlur values may need tuning, or consider drawing filled glow shapes instead of relying solely on canvas shadow.
 
----
+## What's already done (DON'T redo)
+- Nav frosted glass (blur only) — `Nav.module.css`
+- Footer transparent + blur — `Footer.module.css`
+- Starfield Canvas behind list view — `AtomPage.tsx`
+- ProjectOverlay removed (files deleted, state removed)
+- Cards are `<div>` elements (not buttons, no click handler)
+- Rounded rect perimeter sampling replaces superellipse — shape matches card borders
 
-### Ticket 1: Project Card + Overlay — consume new fields
+## Key files
+- `src/features/atom/ProjectList.tsx` — canvas border implementation (main focus)
+- `src/features/atom/ProjectList.module.css` — card styles
+- `src/features/atom/AtomPage.tsx` — starfield bg, view switching
+- `src/features/atom/Nucleus.tsx` — reference for desired visual quality
 
-Update `ProjectCard.tsx` and `ProjectOverlay.tsx` to display:
-- **Status badge** — small pill/tag showing `released`, `in development`, or `early stage`
-- **Private indicator** — lock icon (inline SVG or CSS) next to title when `isPrivate: true`
-- **Media slot** — conditionally render image/video/gif from `media` when not null (placeholder-ready)
-- Hide the "GitHub" link when `project.github` is absent (already works via conditional, but verify)
+## Approach ideas (investigate, don't blindly apply)
+- **Stutter fix:** Cache `getBoundingClientRect` — only recalc on resize, not every frame. Or use ResizeObserver to track card dimensions.
+- **Single canvas:** Instead of 6 canvases, one canvas behind the entire grid positioned with CSS. Draw all borders in one pass. Fewer contexts, fewer reflows.
+- **Better noise:** Port `SIMPLEX_NOISE_3D` from `src/features/atom/noiseGlsl.ts` to JS, or use a lightweight 2D simplex implementation.
+- **Dramatic glow:** Draw filled concentric shapes with decreasing opacity instead of just stroke + shadowBlur. Or use `ctx.filter = 'blur(Xpx)'` on a bright stroke.
 
-Style the badge and lock icon using CSS Modules. Use semantic colors from `global.css` design tokens (add new tokens if needed — e.g. `--color-status-released`, `--color-status-in-dev`, `--color-status-early`).
-
-**Files:** `src/features/atom/ProjectCard.tsx`, `src/features/atom/ProjectCard.module.css`, `src/features/atom/ProjectOverlay.tsx`, `src/features/atom/ProjectOverlay.module.css`, `src/styles/global.css`
-
----
-
-### Ticket 2: ProjectList + ProjectStepper — consume new fields
-
-Update `ProjectList.tsx` to show a compact status indicator and lock icon per card in the grid. The stepper (`ProjectStepper.tsx`) should show the status next to the project title.
-
-**Files:** `src/features/atom/ProjectList.tsx`, `src/features/atom/ProjectList.module.css`, `src/features/atom/ProjectStepper.tsx`, `src/features/atom/ProjectStepper.module.css`
-
----
-
-### Ticket 3: AboutPage + InteractionOverlay — consume new fields
-
-Update `AboutPage.tsx` projects section and `InteractionOverlay.tsx` projects content to display status badges and private indicators. These are simpler card layouts — keep the updates minimal and consistent with the atom page cards.
-
-**Files:** `src/features/about/AboutPage.tsx`, `src/features/about/AboutPage.module.css`, `src/features/game/InteractionOverlay.tsx`, `src/features/game/InteractionOverlay.module.css`
-
----
-
-### Ticket 4: Visual QA + build verification
-
-After all card updates:
-1. `npm run build` (or `tsc -b`) passes clean
-2. Visually verify all 3 pages render the new project data correctly
-3. Confirm private projects show lock icon, no GitHub link
-4. Confirm status badges render with appropriate styling
-5. Keyboard navigation still works on all card variants
-6. Mobile layout handles the extra UI elements gracefully
-
----
-
-## Key constraints
-- CSS Modules only — no inline styles, no Tailwind, no CSS-in-JS
-- Use design tokens from `src/styles/global.css` — add new ones as needed
-- Lock icon should be an inline SVG element, not an emoji or image asset
-- Status badge colors should be subtle — don't overpower the project's `color` theme
-- `media` field is null on all projects right now — just wire up the conditional render so it's ready when assets are added later
-- Keep the `longDescription || description` fallback pattern (longDescription is now required but the pattern is harmless)
+## Constraints
+- Read `CLAUDE.md` and `feedback_visual_bar.md` before starting
+- Use Chrome DevTools MCP to screenshot and verify visual quality — don't fly blind
+- `npm run build` must pass
+- No changes are committed yet — everything is in the working tree on `phase-10/ui-polish`
+- Pre-existing uncommitted changes from a previous session also in working tree (AtomScene.tsx, ProjectOrb.tsx, projects.ts) — don't lose those
