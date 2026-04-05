@@ -15,6 +15,13 @@
     var(--color-starfield-mid) 55%,
     var(--color-starfield-edge) 100%
   );
+  opacity: 1;
+  transition: opacity 350ms var(--ease-exit);
+}
+
+.canvasFading {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .main {

@@ -1,8 +1,8 @@
 import { useState, useRef, useMemo, useEffect } from 'react'
-import { Outlet, useLocation } from 'react-router'
+import { useLocation } from 'react-router'
 import { Nav } from './Nav'
 import { Footer } from './Footer'
-import { PageTransition } from '../ui/PageTransition'
+import { RouteTransition } from '../ui/RouteTransition'
 import { AtomScene, type AtomSceneHandle } from '../../features/atom/AtomScene'
 import { AtomContext, type AtomMode, type ViewMode } from '../../features/atom/AtomContext'
 import { useIsMobile, useIsTablet } from '../../hooks/useMediaQuery'
@@ -30,15 +30,33 @@ export function PageShell() {
     return 'ambient'
   }, [location.pathname])
 
-  const showCanvas = atomMode === 'full' && canRender3D && viewMode === 'atom'
+  // Canvas with delayed unmount for fade-out during route transitions
+  const wantsCanvas = atomMode === 'full' && canRender3D && viewMode === 'atom'
+  const [canvasMounted, setCanvasMounted] = useState(wantsCanvas)
+  const [canvasFading, setCanvasFading] = useState(false)
 
-  // Reset scene state when canvas unmounts (navigating away or switching to list)
   useEffect(() => {
-    if (!showCanvas) {
+    if (wantsCanvas) {
+      setCanvasFading(false)
+      setCanvasMounted(true)
+    } else {
+      setCanvasFading(true)
+      const timer = setTimeout(() => {
+        setCanvasMounted(false)
+        setCanvasFading(false)
+      }, 350)
+      return () => clearTimeout(timer)
+    }
+  }, [wantsCanvas])
+
+  // Reset scene state when leaving the atom page
+  useEffect(() => {
+    if (!wantsCanvas) {
       setFocusedProject(null)
       setSceneFocused(false)
+      setOrbitPaused(false)
     }
-  }, [showCanvas])
+  }, [wantsCanvas])
 
   const ctxValue = useMemo(() => ({
     sceneRef,
@@ -57,8 +75,10 @@ export function PageShell() {
     <AtomContext.Provider value={ctxValue}>
       <div className={styles.shell}>
         <Nav />
-        {showCanvas && (
-          <div className={styles.canvasLayer}>
+        {canvasMounted && (
+          <div
+            className={`${styles.canvasLayer} ${canvasFading ? styles.canvasFading : ''}`}
+          >
             <AtomScene
               ref={sceneRef}
               orbitPaused={orbitPaused}
@@ -70,9 +90,7 @@ export function PageShell() {
           </div>
         )}
         <main className={styles.main}>
-          <PageTransition>
-            <Outlet />
-          </PageTransition>
+          <RouteTransition />
         </main>
         <Footer />
       </div>
