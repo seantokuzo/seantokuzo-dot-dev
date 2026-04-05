@@ -21,7 +21,9 @@ export function HomePage() {
   }, [])
 
   const handleCtaClick = useCallback(() => {
+    if (ctaFading) return // Guard against double-click
     setUfoLifting(true)
+    setCtaFading(true)
 
     // Get the UFO icon's screen position before it lifts off
     const iconRect = ufoIconRef.current?.getBoundingClientRect()
@@ -30,11 +32,10 @@ export function HomePage() {
       : undefined
 
     timerRef.current = setTimeout(() => {
-      setCtaFading(true)
       triggerUfo(screenOrigin)
       navigate('/projects')
     }, 500)
-  }, [triggerUfo, navigate])
+  }, [ctaFading, triggerUfo, navigate])
 
   return (
     <div className={styles.page}>

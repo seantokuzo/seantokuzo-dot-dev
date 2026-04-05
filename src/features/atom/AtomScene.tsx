@@ -88,6 +88,8 @@ function CameraZoom({
   projectsDistance: number
   focusPhase: FocusPhase
 }) {
+  const tmpDir = useMemo(() => new THREE.Vector3(), [])
+
   useFrame((state, delta) => {
     // Don't interfere with project focus animation
     if (focusPhase !== 'idle') return
@@ -97,8 +99,8 @@ function CameraZoom({
 
     const camera = state.camera
     const target = controls.target as THREE.Vector3
-    const dir = camera.position.clone().sub(target)
-    const currentDist = dir.length()
+    tmpDir.copy(camera.position).sub(target)
+    const currentDist = tmpDir.length()
     if (currentDist < 0.01) return
 
     const targetDist = isHomeMode ? HOME_CAMERA_DISTANCE : projectsDistance
@@ -108,8 +110,8 @@ function CameraZoom({
     const speed = 2.5 * Math.min(delta, 0.05)
     const newDist = THREE.MathUtils.lerp(currentDist, targetDist, speed)
 
-    dir.normalize().multiplyScalar(newDist)
-    camera.position.copy(target).add(dir)
+    tmpDir.normalize().multiplyScalar(newDist)
+    camera.position.copy(target).add(tmpDir)
   })
 
   return null

@@ -36,6 +36,8 @@ export function Ufo({ onComplete, onProgress, screenOrigin }: UfoProps) {
   const completedRef = useRef(false)
   const lightRef = useRef<THREE.PointLight>(null)
   const curveRef = useRef<THREE.CatmullRomCurve3 | null>(null)
+  const tmpPos = useMemo(() => new THREE.Vector3(), [])
+  const tmpTangent = useMemo(() => new THREE.Vector3(), [])
   const { camera } = useThree()
 
   // Build curve on first render — uses camera to unproject screen origin
@@ -115,18 +117,18 @@ export function Ufo({ onComplete, onProgress, screenOrigin }: UfoProps) {
     // Ease-in-out (smooth acceleration/deceleration)
     const t = raw < 0.5 ? 2 * raw * raw : 1 - Math.pow(-2 * raw + 2, 2) / 2
 
-    // Position along curve
-    const pos = curve.getPointAt(t)
-    groupRef.current.position.copy(pos)
+    // Position along curve (reuse temp vectors to avoid per-frame allocations)
+    curve.getPointAt(t, tmpPos)
+    groupRef.current.position.copy(tmpPos)
 
     // Gentle bob for organic motion
     groupRef.current.position.y += Math.sin(elapsed * 4) * 0.03
 
     // Face direction of travel (yaw only — keep saucer level)
-    const tangent = curve.getTangentAt(Math.min(t + 0.01, 1))
-    groupRef.current.rotation.y = Math.atan2(tangent.x, tangent.z)
+    curve.getTangentAt(Math.min(t + 0.01, 1), tmpTangent)
+    groupRef.current.rotation.y = Math.atan2(tmpTangent.x, tmpTangent.z)
     // Slight bank into turns
-    groupRef.current.rotation.z = -tangent.x * 0.4
+    groupRef.current.rotation.z = -tmpTangent.x * 0.4
 
     // Scale: quick pop-in, shrink at end
     const scaleIn = Math.min(raw * 4, 1)

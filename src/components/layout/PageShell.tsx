@@ -26,8 +26,11 @@ export function PageShell() {
   const canRender3D = hasWebGL2
 
   const triggerUfo = useCallback((screenOrigin?: { x: number; y: number }) => {
+    const scene = sceneRef.current
+    if (!scene) return
+
     setIsLanding(true)
-    sceneRef.current?.startUfo(() => setIsLanding(false), screenOrigin)
+    scene.startUfo(() => setIsLanding(false), screenOrigin)
   }, [])
 
   const atomMode: AtomMode = useMemo(() => {
@@ -63,6 +66,7 @@ export function PageShell() {
       setFocusedProject(null)
       setSceneFocused(false)
       setOrbitPaused(false)
+      setIsLanding(false)
     } else if (atomMode !== 'projects') {
       setFocusedProject(null)
       setSceneFocused(false)
