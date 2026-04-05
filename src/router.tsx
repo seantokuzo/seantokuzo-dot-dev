@@ -3,6 +3,9 @@ import { createBrowserRouter } from 'react-router'
 import { PageShell } from './components/layout/PageShell'
 import { LoadingScreen } from './components/ui/LoadingScreen'
 
+const HomePage = lazy(() =>
+  import('./features/home/HomePage').then((m) => ({ default: m.HomePage }))
+)
 const AtomPage = lazy(() =>
   import('./features/atom/AtomPage').then((m) => ({ default: m.AtomPage }))
 )
@@ -19,6 +22,14 @@ export const router = createBrowserRouter([
     children: [
       {
         path: '/',
+        element: (
+          <Suspense fallback={<LoadingScreen />}>
+            <HomePage />
+          </Suspense>
+        ),
+      },
+      {
+        path: '/projects',
         element: (
           <Suspense fallback={<LoadingScreen />}>
             <AtomPage />

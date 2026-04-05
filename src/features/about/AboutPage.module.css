@@ -2,6 +2,7 @@
   max-width: var(--content-max-width);
   margin: 0 auto;
   padding: var(--space-3xl) var(--space-xl);
+  pointer-events: auto;
   display: flex;
   flex-direction: column;
   gap: var(--space-4xl);

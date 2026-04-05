@@ -2,9 +2,42 @@
   display: flex;
   flex-direction: column;
   min-height: 100dvh;
+  position: relative;
+}
+
+.canvasLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse at 50% 40%,
+    var(--color-starfield-core) 0%,
+    var(--color-starfield-mid) 55%,
+    var(--color-starfield-edge) 100%
+  );
+  animation: canvasEnter 500ms var(--ease-spring) both;
+  transition: opacity 350ms var(--ease-exit);
+}
+
+.canvasHome {
+  pointer-events: none;
+}
+
+.canvasFading {
+  animation: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes canvasEnter {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .main {
   flex: 1;
   padding-top: var(--nav-height);
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
 }

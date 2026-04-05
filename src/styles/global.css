@@ -64,6 +64,11 @@
   --color-glow-turquoise-subtle: rgba(0, 180, 216, 0.1);
   --color-accent-bio-60: rgba(0, 245, 212, 0.6);
   --color-accent-bio-50: rgba(0, 245, 212, 0.5);
+  --color-accent-bio-25: rgba(0, 245, 212, 0.25);
+  --color-accent-bio-20: rgba(0, 245, 212, 0.2);
+  --color-accent-bio-12: rgba(0, 245, 212, 0.12);
+  --color-accent-bio-10: rgba(0, 245, 212, 0.1);
+  --color-accent-bio-8: rgba(0, 245, 212, 0.08);
   --color-turquoise-40: rgba(0, 180, 216, 0.4);
   --color-turquoise-30: rgba(0, 180, 216, 0.3);
   --color-purple-soft: #a78bfa;

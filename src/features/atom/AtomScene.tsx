@@ -1,13 +1,15 @@
 import { useState, useRef, useCallback, useEffect, useMemo, forwardRef, useImperativeHandle } from 'react'
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, AdaptiveDpr } from '@react-three/drei'
 import * as THREE from 'three'
 import { Nucleus } from './Nucleus'
 import { ElectronOrbit } from './ElectronOrbit'
 import { ProjectOrb } from './ProjectOrb'
 import { Starfield } from './Starfield'
+import { Ufo } from './Ufo'
 import { CameraController, type FocusPhase } from './CameraController'
 import { projects, type Project } from '../../data/projects'
+import type { AtomMode } from './AtomContext'
 
 type OrbitConfig = {
   radius: number
@@ -39,6 +41,7 @@ const ORBITS_TABLET: OrbitConfig[] = [
 
 const CAMERA_Y = 3
 const CAMERA_Z_DESKTOP = 8
+const HOME_CAMERA_DISTANCE = 80
 const ORB_RADIUS = 0.18
 const ORB_RADIUS_MOBILE = 0.24
 
@@ -61,13 +64,68 @@ function computeFitCameraZ(
   return Math.sqrt(Math.max(1, requiredDist * requiredDist - cameraY * cameraY))
 }
 
+/** Scene lighting — full brightness in all modes */
+function SceneLighting() {
+  return (
+    <>
+      <ambientLight intensity={0.3} />
+      <directionalLight position={[5, 8, 5]} intensity={1.2} />
+      <pointLight position={[-6, -3, -8]} intensity={0.4} color="#b967ff" />
+    </>
+  )
+}
+
+/** Lerps camera distance between home (far/tiny atom) and projects (normal) */
+function CameraZoom({
+  isHomeMode,
+  controlsRef,
+  projectsDistance,
+  focusPhase,
+}: {
+  isHomeMode: boolean
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  controlsRef: React.RefObject<any>
+  projectsDistance: number
+  focusPhase: FocusPhase
+}) {
+  const tmpDir = useMemo(() => new THREE.Vector3(), [])
+
+  useFrame((state, delta) => {
+    // Don't interfere with project focus animation
+    if (focusPhase !== 'idle') return
+
+    const controls = controlsRef.current
+    if (!controls) return
+
+    const camera = state.camera
+    const target = controls.target as THREE.Vector3
+    tmpDir.copy(camera.position).sub(target)
+    const currentDist = tmpDir.length()
+    if (currentDist < 0.01) return
+
+    const targetDist = isHomeMode ? HOME_CAMERA_DISTANCE : projectsDistance
+    // Skip if already close enough
+    if (Math.abs(currentDist - targetDist) < 0.05) return
+
+    const speed = 2.5 * Math.min(delta, 0.05)
+    const newDist = THREE.MathUtils.lerp(currentDist, targetDist, speed)
+
+    tmpDir.normalize().multiplyScalar(newDist)
+    camera.position.copy(target).add(tmpDir)
+  })
+
+  return null
+}
+
 export interface AtomSceneHandle {
   focusProject: (project: Project) => void
   stepToProject: (project: Project) => void
   requestClose: () => void
+  startUfo: (onComplete: () => void, screenOrigin?: { x: number; y: number }) => void
 }
 
 interface AtomSceneProps {
+  atomMode?: AtomMode
   orbitPaused?: boolean
   isMobile?: boolean
   isTablet?: boolean
@@ -76,9 +134,10 @@ interface AtomSceneProps {
 }
 
 export const AtomScene = forwardRef<AtomSceneHandle, AtomSceneProps>(function AtomScene(
-  { orbitPaused = false, isMobile = false, isTablet = false, onFocusChange, onFocusedProjectChange },
+  { atomMode = 'projects', orbitPaused = false, isMobile = false, isTablet = false, onFocusChange, onFocusedProjectChange },
   ref
 ) {
+  const isHomeMode = atomMode === 'home'
   const orbits = isMobile ? ORBITS_MOBILE : isTablet ? ORBITS_TABLET : ORBITS_DESKTOP
   const cameraFov = isMobile ? 60 : 50
   const orbRadius = isMobile ? ORB_RADIUS_MOBILE : ORB_RADIUS
@@ -144,11 +203,29 @@ export const AtomScene = forwardRef<AtomSceneHandle, AtomSceneProps>(function At
     onFocusedProjectChange?.(focusedProject)
   }, [focusedProject, onFocusedProjectChange])
 
+  // UFO flight state
+  const [ufoFlying, setUfoFlying] = useState(false)
+  const ufoCompleteRef = useRef<(() => void) | null>(null)
+  const ufoScreenOriginRef = useRef<{ x: number; y: number } | null>(null)
+
+  const startUfo = useCallback((onComplete: () => void, screenOrigin?: { x: number; y: number }) => {
+    ufoCompleteRef.current = onComplete
+    ufoScreenOriginRef.current = screenOrigin ?? null
+    setUfoFlying(true)
+  }, [])
+
+  const handleUfoComplete = useCallback(() => {
+    setUfoFlying(false)
+    ufoCompleteRef.current?.()
+    ufoCompleteRef.current = null
+  }, [])
+
   useImperativeHandle(ref, () => ({
     focusProject: handleSelectProject,
     stepToProject: handleStepToProject,
     requestClose,
-  }), [handleSelectProject, handleStepToProject, requestClose])
+    startUfo,
+  }), [handleSelectProject, handleStepToProject, requestClose, startUfo])
 
   return (
     <Canvas
@@ -163,10 +240,7 @@ export const AtomScene = forwardRef<AtomSceneHandle, AtomSceneProps>(function At
       {/* Starfield background */}
       <Starfield />
 
-      {/* Lighting */}
-      <ambientLight intensity={0.3} />
-      <directionalLight position={[5, 8, 5]} intensity={1.2} />
-      <pointLight position={[-6, -3, -8]} intensity={0.4} color="#b967ff" />
+      <SceneLighting />
 
       {/* Nucleus */}
       <Nucleus />
@@ -198,11 +272,15 @@ export const AtomScene = forwardRef<AtomSceneHandle, AtomSceneProps>(function At
                 onCardExitComplete={handleCardExitComplete}
                 isMobile={isMobile}
                 orbitPaused={orbitPaused}
+                showLabel={!isHomeMode}
               />
             )
           })}
         </group>
       ))}
+
+      {/* UFO flight */}
+      {ufoFlying && <Ufo onComplete={handleUfoComplete} screenOrigin={ufoScreenOriginRef.current} />}
 
       {/* Camera animation controller */}
       <CameraController
@@ -214,13 +292,22 @@ export const AtomScene = forwardRef<AtomSceneHandle, AtomSceneProps>(function At
         isMobile={isMobile}
       />
 
+      {/* Home/projects camera zoom lerp */}
+      <CameraZoom
+        isHomeMode={isHomeMode}
+        controlsRef={controlsRef}
+        projectsDistance={Math.sqrt(CAMERA_Y ** 2 + cameraZ ** 2)}
+        focusPhase={focusPhase}
+      />
+
       {/* Controls — Y-axis rotation only (polar angle locked) */}
       <OrbitControls
         ref={controlsRef}
         enablePan={false}
-        enableZoom={true}
+        enableZoom={!isHomeMode}
+        enableRotate={!isHomeMode}
         minDistance={4}
-        maxDistance={isMobile ? 18 : 14}
+        maxDistance={isHomeMode ? HOME_CAMERA_DISTANCE + 10 : (isMobile ? 18 : 14)}
         minPolarAngle={polarAngle}
         maxPolarAngle={polarAngle}
         autoRotate={!orbitPaused && focusPhase === 'idle'}
