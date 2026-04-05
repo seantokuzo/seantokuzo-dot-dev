@@ -2,8 +2,9 @@ import { useEffect, useRef, useCallback } from 'react'
 import type React from 'react'
 import { useNavigate } from 'react-router'
 import { useGameStore, type InteractableId } from '../../store/useGameStore'
-import { projects, STATUS_LABELS } from '../../data/projects'
+import { projects } from '../../data/projects'
 import { LockIcon } from '../../components/ui/LockIcon'
+import { StatusBadge } from '../../components/ui/StatusBadge'
 import { skills, skillCategories, type SkillCategory } from '../../data/skills'
 import { socialLinks } from '../../data/bio'
 import styles from './InteractionOverlay.module.css'
@@ -117,9 +118,7 @@ function ProjectsContent() {
               {project.isPrivate && (
                 <LockIcon className={styles.lockIcon} />
               )}
-              <span className={styles.statusBadge} data-status={project.status}>
-                {STATUS_LABELS[project.status]}
-              </span>
+              <StatusBadge status={project.status} />
             </div>
             <p className={styles.projectDesc}>{project.description}</p>
             <div className={styles.tags}>

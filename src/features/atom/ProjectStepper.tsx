@@ -1,5 +1,6 @@
-import { STATUS_LABELS, type Project } from '../../data/projects'
+import type { Project } from '../../data/projects'
 import { LockIcon } from '../../components/ui/LockIcon'
+import { StatusBadge } from '../../components/ui/StatusBadge'
 import styles from './ProjectStepper.module.css'
 
 interface ProjectStepperProps {
@@ -48,9 +49,7 @@ export function ProjectStepper({
         )}
         {focusedProject.title}
         <span className={styles.separator} aria-hidden="true">&middot;</span>
-        <span className={styles.statusText} data-status={focusedProject.status}>
-          {STATUS_LABELS[focusedProject.status]}
-        </span>
+        <StatusBadge status={focusedProject.status} variant="text" />
       </span>
       <button
         type="button"
