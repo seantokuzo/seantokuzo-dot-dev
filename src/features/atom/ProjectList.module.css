@@ -55,6 +55,10 @@
   margin-bottom: var(--space-sm);
 }
 
+.titleRow > :last-child {
+  margin-left: auto;
+}
+
 .title {
   font-family: var(--font-heading);
   font-size: var(--text-lg);
