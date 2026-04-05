@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useEffect } from 'react'
+import { useState, useRef, useMemo, useEffect, useCallback } from 'react'
 import { useLocation } from 'react-router'
 import { Nav } from './Nav'
 import { Footer } from './Footer'
@@ -22,7 +22,12 @@ export function PageShell() {
   const [viewMode, setViewMode] = useState<ViewMode>('atom')
   const [orbitPaused, setOrbitPaused] = useState(false)
 
+  const [isLanding, setIsLanding] = useState(true)
   const canRender3D = hasWebGL2
+
+  const triggerUfo = useCallback(() => {
+    sceneRef.current?.startUfo(() => setIsLanding(false))
+  }, [])
 
   const atomMode: AtomMode = useMemo(() => {
     if (location.pathname === '/world') return 'hidden'
@@ -69,7 +74,9 @@ export function PageShell() {
     setOrbitPaused,
     canRender3D,
     hasCamera,
-  }), [atomMode, focusedProject, sceneFocused, viewMode, orbitPaused, canRender3D, hasCamera])
+    isLanding,
+    triggerUfo,
+  }), [atomMode, focusedProject, sceneFocused, viewMode, orbitPaused, canRender3D, hasCamera, isLanding, triggerUfo])
 
   return (
     <AtomContext.Provider value={ctxValue}>

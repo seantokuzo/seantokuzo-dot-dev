@@ -47,6 +47,104 @@
   outline-offset: 2px;
 }
 
+/* --- UFO CTA Button --- */
+.ctaWrap {
+  position: absolute;
+  bottom: clamp(20%, 30vh, 35%);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  pointer-events: auto;
+  opacity: 1;
+  transition: opacity 300ms var(--ease-exit), transform 300ms var(--ease-exit);
+  animation: ctaEnter 800ms var(--ease-spring) both 400ms;
+}
+
+.ctaFading {
+  opacity: 0;
+  transform: translateX(-50%) translateY(8px) scale(0.95);
+  pointer-events: none;
+}
+
+.ctaLabel {
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  color: var(--color-text-muted);
+  letter-spacing: 0.03em;
+}
+
+.ctaButton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  background: rgba(0, 245, 212, 0.08);
+  border: 1px solid rgba(0, 245, 212, 0.25);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md) var(--space-xl);
+  cursor: pointer;
+  pointer-events: auto;
+  backdrop-filter: blur(var(--glass-blur));
+  transition:
+    border-color var(--transition-base),
+    box-shadow var(--transition-base),
+    background var(--transition-base),
+    transform var(--transition-fast);
+}
+
+.ctaButton:hover {
+  border-color: rgba(0, 245, 212, 0.5);
+  box-shadow: 0 0 30px rgba(0, 245, 212, 0.2), 0 0 60px rgba(0, 245, 212, 0.1);
+  background: rgba(0, 245, 212, 0.12);
+  transform: translateY(-2px);
+}
+
+.ctaButton:active {
+  transform: translateY(0);
+}
+
+.ctaButton:focus-visible {
+  outline: 2px solid var(--color-accent-bioluminescent);
+  outline-offset: 3px;
+}
+
+.ctaButton:disabled {
+  cursor: default;
+}
+
+.ctaIcon {
+  font-size: var(--text-xl);
+  display: inline-block;
+  animation: ctaIconBob 2s ease-in-out infinite;
+}
+
+@keyframes ctaEnter {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes ctaIconBob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
 /* --- Bottom Controls (stepper + secondary) --- */
 .bottomControls {
   position: absolute;

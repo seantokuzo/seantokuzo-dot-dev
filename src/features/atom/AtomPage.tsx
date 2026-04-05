@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useIsMobile } from '../../hooks/useMediaQuery'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useGestureControls } from '../../hooks/useGestureControls'
@@ -21,7 +21,11 @@ export function AtomPage() {
     sceneFocused,
     canRender3D,
     hasCamera,
+    isLanding,
+    triggerUfo,
   } = useAtomContext()
+
+  const [ctaFading, setCtaFading] = useState(false)
 
   // CV gesture controls — desktop only, 3D view only
   const gestureOptions = useMemo(
@@ -29,6 +33,12 @@ export function AtomPage() {
     [setOrbitPaused]
   )
   useGestureControls(gestureOptions)
+
+  const handleCtaClick = useCallback(() => {
+    setCtaFading(true)
+    // Small delay so the CTA fade-out starts before the UFO appears
+    setTimeout(() => triggerUfo(), 250)
+  }, [triggerUfo])
 
   // Stepper callbacks
   const handleExplore = useCallback(() => {
@@ -77,7 +87,7 @@ export function AtomPage() {
     )
   }
 
-  // 3D view: overlay controls on top of persistent canvas (rendered in PageShell)
+  // 3D view: overlay controls on top of persistent canvas
   return (
     <div className={styles.page}>
       <div
@@ -89,28 +99,50 @@ export function AtomPage() {
         </p>
       </div>
 
-      <div className={styles.bottomControls}>
-        <ProjectStepper
-          focusedProject={focusedProject}
-          onExplore={handleExplore}
-          onNext={handleStepNext}
-          onPrev={handleStepPrev}
-          onClose={handleStepClose}
-        />
-        <div
-          className={`${styles.secondaryControls} ${sceneFocused ? styles.controlsHidden : ''}`}
-        >
+      {/* UFO CTA — visible during landing, fades on click */}
+      {isLanding && (
+        <div className={`${styles.ctaWrap} ${ctaFading ? styles.ctaFading : ''}`}>
+          <p className={styles.ctaLabel}>Curious what I&rsquo;m building?</p>
           <button
             type="button"
-            className={styles.toggle}
-            onClick={() => setViewMode('list')}
-            aria-label="Switch to list view"
+            className={styles.ctaButton}
+            onClick={handleCtaClick}
+            disabled={ctaFading}
+            aria-label="Launch UFO to explore projects"
           >
-            ☰ List View
+            <span className={styles.ctaIcon} aria-hidden="true">
+              🛸
+            </span>
+            See my projects
           </button>
-          {!isMobile && hasCamera && <CVToggle />}
         </div>
-      </div>
+      )}
+
+      {/* Project controls — visible after landing */}
+      {!isLanding && (
+        <div className={styles.bottomControls}>
+          <ProjectStepper
+            focusedProject={focusedProject}
+            onExplore={handleExplore}
+            onNext={handleStepNext}
+            onPrev={handleStepPrev}
+            onClose={handleStepClose}
+          />
+          <div
+            className={`${styles.secondaryControls} ${sceneFocused ? styles.controlsHidden : ''}`}
+          >
+            <button
+              type="button"
+              className={styles.toggle}
+              onClick={() => setViewMode('list')}
+              aria-label="Switch to list view"
+            >
+              ☰ List View
+            </button>
+            {!isMobile && hasCamera && <CVToggle />}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

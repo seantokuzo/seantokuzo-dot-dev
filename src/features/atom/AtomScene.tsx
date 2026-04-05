@@ -6,6 +6,7 @@ import { Nucleus } from './Nucleus'
 import { ElectronOrbit } from './ElectronOrbit'
 import { ProjectOrb } from './ProjectOrb'
 import { Starfield } from './Starfield'
+import { Ufo } from './Ufo'
 import { CameraController, type FocusPhase } from './CameraController'
 import { projects, type Project } from '../../data/projects'
 
@@ -65,6 +66,7 @@ export interface AtomSceneHandle {
   focusProject: (project: Project) => void
   stepToProject: (project: Project) => void
   requestClose: () => void
+  startUfo: (onComplete: () => void) => void
 }
 
 interface AtomSceneProps {
@@ -144,11 +146,27 @@ export const AtomScene = forwardRef<AtomSceneHandle, AtomSceneProps>(function At
     onFocusedProjectChange?.(focusedProject)
   }, [focusedProject, onFocusedProjectChange])
 
+  // UFO flight state
+  const [ufoFlying, setUfoFlying] = useState(false)
+  const ufoCompleteRef = useRef<(() => void) | null>(null)
+
+  const startUfo = useCallback((onComplete: () => void) => {
+    ufoCompleteRef.current = onComplete
+    setUfoFlying(true)
+  }, [])
+
+  const handleUfoComplete = useCallback(() => {
+    setUfoFlying(false)
+    ufoCompleteRef.current?.()
+    ufoCompleteRef.current = null
+  }, [])
+
   useImperativeHandle(ref, () => ({
     focusProject: handleSelectProject,
     stepToProject: handleStepToProject,
     requestClose,
-  }), [handleSelectProject, handleStepToProject, requestClose])
+    startUfo,
+  }), [handleSelectProject, handleStepToProject, requestClose, startUfo])
 
   return (
     <Canvas
@@ -203,6 +221,9 @@ export const AtomScene = forwardRef<AtomSceneHandle, AtomSceneProps>(function At
           })}
         </group>
       ))}
+
+      {/* UFO flight */}
+      {ufoFlying && <Ufo onComplete={handleUfoComplete} />}
 
       {/* Camera animation controller */}
       <CameraController

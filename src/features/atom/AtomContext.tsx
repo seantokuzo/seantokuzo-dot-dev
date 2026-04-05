@@ -16,6 +16,8 @@ interface AtomContextValue {
   setOrbitPaused: (paused: boolean) => void
   canRender3D: boolean
   hasCamera: boolean
+  isLanding: boolean
+  triggerUfo: () => void
 }
 
 const AtomContext = createContext<AtomContextValue | null>(null)
