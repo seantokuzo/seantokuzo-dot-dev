@@ -15,13 +15,19 @@
     var(--color-starfield-mid) 55%,
     var(--color-starfield-edge) 100%
   );
-  opacity: 1;
+  animation: canvasEnter 500ms var(--ease-spring) both;
   transition: opacity 350ms var(--ease-exit);
 }
 
 .canvasFading {
+  animation: none;
   opacity: 0;
   pointer-events: none;
+}
+
+@keyframes canvasEnter {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .main {

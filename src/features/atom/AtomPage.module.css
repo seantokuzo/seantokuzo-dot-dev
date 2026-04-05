@@ -157,6 +157,18 @@
   align-items: center;
   gap: var(--space-md);
   pointer-events: auto;
+  animation: controlsEnter 500ms var(--ease-spring) both 150ms;
+}
+
+@keyframes controlsEnter {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 .secondaryControls {

@@ -99,8 +99,8 @@ export function AtomPage() {
         </p>
       </div>
 
-      {/* UFO CTA — visible during landing, fades on click */}
-      {isLanding && (
+      {/* UFO CTA — visible during landing, hidden when focused on a project */}
+      {isLanding && !sceneFocused && (
         <div className={`${styles.ctaWrap} ${ctaFading ? styles.ctaFading : ''}`}>
           <p className={styles.ctaLabel}>Curious what I&rsquo;m building?</p>
           <button
@@ -118,8 +118,8 @@ export function AtomPage() {
         </div>
       )}
 
-      {/* Project controls — visible after landing */}
-      {!isLanding && (
+      {/* Project controls — visible after landing or when focused on a project */}
+      {(!isLanding || sceneFocused) && (
         <div className={styles.bottomControls}>
           <ProjectStepper
             focusedProject={focusedProject}
