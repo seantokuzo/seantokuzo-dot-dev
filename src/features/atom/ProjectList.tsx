@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react'
-import { projects, STATUS_LABELS } from '../../data/projects'
+import { projects } from '../../data/projects'
 import { LockIcon } from '../../components/ui/LockIcon'
+import { StatusBadge } from '../../components/ui/StatusBadge'
 import styles from './ProjectList.module.css'
 
 /* ------------------------------------------------------------------ */
@@ -473,12 +474,7 @@ export function ProjectList() {
                   className={styles.lockIcon}
                 />
               )}
-              <span
-                className={styles.statusBadge}
-                data-status={project.status}
-              >
-                {STATUS_LABELS[project.status]}
-              </span>
+              <StatusBadge status={project.status} />
             </div>
             <p className={styles.description}>{project.description}</p>
             <div className={styles.tech}>

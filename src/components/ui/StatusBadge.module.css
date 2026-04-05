@@ -1,0 +1,46 @@
+.badge {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.text {
+  font-family: var(--font-primary);
+  font-size: var(--text-xs);
+  font-weight: 500;
+}
+
+.badge[data-status="released"],
+.text[data-status="released"] {
+  color: var(--color-status-released);
+}
+
+.badge[data-status="released"] {
+  background: var(--color-status-released-bg);
+  border-color: var(--color-status-released-border);
+}
+
+.badge[data-status="in-development"],
+.text[data-status="in-development"] {
+  color: var(--color-status-in-dev);
+}
+
+.badge[data-status="in-development"] {
+  background: var(--color-status-in-dev-bg);
+  border-color: var(--color-status-in-dev-border);
+}
+
+.badge[data-status="early-stage"],
+.text[data-status="early-stage"] {
+  color: var(--color-status-early);
+}
+
+.badge[data-status="early-stage"] {
+  background: var(--color-status-early-bg);
+  border-color: var(--color-status-early-border);
+}

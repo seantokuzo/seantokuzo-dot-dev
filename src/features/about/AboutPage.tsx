@@ -2,8 +2,9 @@ import { bio, socialLinks } from '../../data/bio'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { skills, skillCategories, type SkillCategory } from '../../data/skills'
 import { experience } from '../../data/experience'
-import { projects, STATUS_LABELS } from '../../data/projects'
+import { projects } from '../../data/projects'
 import { LockIcon } from '../../components/ui/LockIcon'
+import { StatusBadge } from '../../components/ui/StatusBadge'
 import styles from './AboutPage.module.css'
 
 function BioSection() {
@@ -79,9 +80,7 @@ function ProjectsSection() {
               {project.isPrivate && (
                 <LockIcon className={styles.lockIcon} />
               )}
-              <span className={styles.statusBadge} data-status={project.status}>
-                {STATUS_LABELS[project.status]}
-              </span>
+              <StatusBadge status={project.status} />
             </div>
             <p className={styles.projectDescription}>{project.description}</p>
             <div className={styles.projectTech}>

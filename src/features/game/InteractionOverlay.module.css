@@ -87,7 +87,7 @@
 }
 
 .projectCard {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--color-overlay-light);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
@@ -115,34 +115,6 @@
 .lockIcon {
   color: var(--color-text-muted);
   flex-shrink: 0;
-}
-
-.statusBadge {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  font-weight: 500;
-  padding: 2px var(--space-sm);
-  border-radius: var(--radius-full);
-  border: 1px solid;
-  white-space: nowrap;
-}
-
-.statusBadge[data-status="released"] {
-  color: var(--color-status-released);
-  background: var(--color-status-released-bg);
-  border-color: var(--color-status-released-border);
-}
-
-.statusBadge[data-status="in-development"] {
-  color: var(--color-status-in-dev);
-  background: var(--color-status-in-dev-bg);
-  border-color: var(--color-status-in-dev-border);
-}
-
-.statusBadge[data-status="early-stage"] {
-  color: var(--color-status-early);
-  background: var(--color-status-early-bg);
-  border-color: var(--color-status-early-border);
 }
 
 .projectDesc {
@@ -235,7 +207,7 @@
   font-weight: 500;
   color: var(--color-accent-bioluminescent);
   padding: var(--space-sm) var(--space-md);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--color-overlay-light);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   transition: border-color var(--transition-fast), color var(--transition-fast);

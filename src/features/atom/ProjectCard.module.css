@@ -2,25 +2,25 @@
   position: relative;
   width: 380px;
   max-width: 90vw;
-  background: rgba(10, 22, 40, 0.92);
-  backdrop-filter: blur(16px);
+  background: var(--color-bg-card-solid);
+  backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--color-turquoise-30);
   border-radius: var(--radius-xl);
   padding: var(--space-xl);
   box-shadow:
-    0 0 40px rgba(0, 245, 212, 0.12),
-    0 8px 32px rgba(0, 0, 0, 0.5);
+    var(--shadow-glow-cyan),
+    var(--shadow-lg);
   pointer-events: auto;
 
   /* Orbit-in from behind the electron — pivots on left edge */
   transform-origin: left center;
-  animation: cardEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: cardEnter 500ms var(--ease-spring) forwards;
 }
 
 .card.exiting {
   /* Exit swings to opposite side — pivots on right edge */
   transform-origin: right center;
-  animation: cardExit 0.4s cubic-bezier(0.7, 0, 0.84, 0) forwards;
+  animation: cardExit 400ms var(--ease-exit) forwards;
 }
 
 @keyframes cardEnter {
@@ -94,35 +94,6 @@
   flex-shrink: 0;
 }
 
-.statusBadge {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  font-weight: 500;
-  padding: 2px var(--space-sm);
-  border-radius: var(--radius-full);
-  border: 1px solid transparent;
-  white-space: nowrap;
-  line-height: 1.4;
-}
-
-.statusBadge[data-status="released"] {
-  color: var(--color-status-released);
-  background: var(--color-status-released-bg);
-  border-color: var(--color-status-released-border);
-}
-
-.statusBadge[data-status="in-development"] {
-  color: var(--color-status-in-dev);
-  background: var(--color-status-in-dev-bg);
-  border-color: var(--color-status-in-dev-border);
-}
-
-.statusBadge[data-status="early-stage"] {
-  color: var(--color-status-early);
-  background: var(--color-status-early-bg);
-  border-color: var(--color-status-early-border);
-}
-
 .description {
   color: var(--color-text-primary);
   font-size: var(--text-sm);
@@ -136,7 +107,7 @@
 
 .mediaContent {
   max-width: 100%;
-  border-radius: var(--radius-md, 8px);
+  border-radius: var(--radius-md);
 }
 
 .tech {
@@ -148,7 +119,7 @@
 
 .tag {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: var(--text-2xs);
   color: var(--color-ocean-aqua);
   background: var(--color-tag-bg);
   border: 1px solid var(--color-tag-border);

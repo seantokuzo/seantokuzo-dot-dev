@@ -1,7 +1,8 @@
 import type React from 'react'
 import { useEffect, useRef, useCallback } from 'react'
-import { STATUS_LABELS, type Project } from '../../data/projects'
+import type { Project } from '../../data/projects'
 import { LockIcon } from '../../components/ui/LockIcon'
+import { StatusBadge } from '../../components/ui/StatusBadge'
 import styles from './ProjectCard.module.css'
 
 interface ProjectCardProps {
@@ -85,12 +86,7 @@ export function ProjectCard({ project, exiting, onClose, onExitComplete }: Proje
             <LockIcon size={14} className={styles.lockIcon} />
           )}
         </h2>
-        <span
-          className={styles.statusBadge}
-          data-status={project.status}
-        >
-          {STATUS_LABELS[project.status]}
-        </span>
+        <StatusBadge status={project.status} />
       </div>
 
       <p className={styles.description}>
