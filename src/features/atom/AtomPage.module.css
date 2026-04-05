@@ -85,8 +85,8 @@
   font-size: var(--text-lg);
   font-weight: 600;
   color: var(--color-text-primary);
-  background: rgba(0, 245, 212, 0.08);
-  border: 1px solid rgba(0, 245, 212, 0.25);
+  background: var(--color-accent-bio-8);
+  border: 1px solid var(--color-accent-bio-25);
   border-radius: var(--radius-lg);
   padding: var(--space-md) var(--space-xl);
   cursor: pointer;
@@ -100,9 +100,9 @@
 }
 
 .ctaButton:hover {
-  border-color: rgba(0, 245, 212, 0.5);
-  box-shadow: 0 0 30px rgba(0, 245, 212, 0.2), 0 0 60px rgba(0, 245, 212, 0.1);
-  background: rgba(0, 245, 212, 0.12);
+  border-color: var(--color-accent-bio-50);
+  box-shadow: 0 0 30px var(--color-accent-bio-20), 0 0 60px var(--color-accent-bio-10);
+  background: var(--color-accent-bio-12);
   transform: translateY(-2px);
 }
 

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, type AnimationEvent } from 'react'
 import { useLocation, useOutlet } from 'react-router'
 import styles from './RouteTransition.module.css'
 
@@ -17,23 +17,18 @@ export function RouteTransition() {
   const [frozenOutlet, setFrozenOutlet] = useState(currentOutlet)
   const prevPathRef = useRef(location.pathname)
 
-  // Detect route changes and start exit transition
+  // Detect route changes → start exit; keep outlet in sync when idle
   useEffect(() => {
     if (location.pathname !== prevPathRef.current) {
       prevPathRef.current = location.pathname
       setPhase('exiting')
-    }
-  }, [location.pathname])
-
-  // Keep outlet in sync when not mid-transition
-  useEffect(() => {
-    if (phase === 'idle') {
+    } else if (phase === 'idle') {
       setFrozenOutlet(currentOutlet)
     }
-  }, [currentOutlet, phase])
+  }, [location.pathname, currentOutlet, phase])
 
   const handleAnimationEnd = useCallback(
-    (e: React.AnimationEvent) => {
+    (e: AnimationEvent) => {
       // Ignore bubbled animation events from descendants
       if (e.target !== e.currentTarget) return
 

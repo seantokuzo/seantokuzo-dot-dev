@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import { useIsMobile } from '../../hooks/useMediaQuery'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useGestureControls } from '../../hooks/useGestureControls'
@@ -26,6 +26,13 @@ export function AtomPage() {
   } = useAtomContext()
 
   const [ctaFading, setCtaFading] = useState(false)
+  const ctaTimerRef = useRef<ReturnType<typeof setTimeout>>(null)
+
+  useEffect(() => {
+    return () => {
+      if (ctaTimerRef.current) clearTimeout(ctaTimerRef.current)
+    }
+  }, [])
 
   // CV gesture controls — desktop only, 3D view only
   const gestureOptions = useMemo(
@@ -36,8 +43,7 @@ export function AtomPage() {
 
   const handleCtaClick = useCallback(() => {
     setCtaFading(true)
-    // Small delay so the CTA fade-out starts before the UFO appears
-    setTimeout(() => triggerUfo(), 250)
+    ctaTimerRef.current = setTimeout(() => triggerUfo(), 250)
   }, [triggerUfo])
 
   // Stepper callbacks
