@@ -1,6 +1,4 @@
 import { useState, useCallback, useMemo, useRef } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
-import type { Group } from 'three'
 import { useIsMobile, useIsTablet } from '../../hooks/useMediaQuery'
 import { useDeviceCapabilities } from '../../hooks/useDeviceCapabilities'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
@@ -9,23 +7,10 @@ import { AtomScene, type AtomSceneHandle } from './AtomScene'
 import { ProjectList } from './ProjectList'
 import { CVToggle } from './CVToggle'
 import { ProjectStepper } from './ProjectStepper'
-import { Starfield } from './Starfield'
 import { projects, type Project } from '../../data/projects'
 import styles from './AtomPage.module.css'
 
 type ViewMode = 'atom' | 'list'
-
-function RotatingStarfield() {
-  const ref = useRef<Group>(null)
-  useFrame((_, delta) => {
-    if (ref.current) ref.current.rotation.y += delta * 0.015
-  })
-  return (
-    <group ref={ref}>
-      <Starfield />
-    </group>
-  )
-}
 
 export function AtomPage() {
   useDocumentTitle('Sean Simpson — seantokuzo.dev')
@@ -143,17 +128,7 @@ export function AtomPage() {
         </div>
       ) : (
         <>
-          {canRender3D && (
-            <div className={styles.starfieldBg}>
-              <Canvas
-                camera={{ position: [0, 0, 0], fov: 75 }}
-                dpr={[1, 1.5]}
-                gl={{ antialias: false, alpha: true }}
-              >
-                <RotatingStarfield />
-              </Canvas>
-            </div>
-          )}
+          <div className={styles.starfieldBg} />
           <ProjectList />
         </>
       )}

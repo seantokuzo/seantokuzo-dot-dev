@@ -1,7 +1,7 @@
 .list {
   position: relative;
   z-index: 1;
-  padding: var(--space-2xl) var(--space-lg);
+  padding: calc(var(--nav-height) + var(--space-3xl)) var(--space-lg) var(--space-2xl);
   max-width: var(--content-max-width);
   margin: 0 auto;
   min-height: calc(100dvh - var(--nav-height));

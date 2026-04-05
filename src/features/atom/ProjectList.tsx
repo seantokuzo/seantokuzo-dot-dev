@@ -103,8 +103,9 @@ function fbm(x: number, y: number, z: number): number {
 /* ------------------------------------------------------------------ */
 
 const GLOW_PAD = 28
-const NUM_POINTS = 200
+const NUM_POINTS = 80
 const BORDER_RADIUS = 16
+const FRAME_INTERVAL = 1000 / 30 // Target 30fps
 
 const PLASMA_COLORS: [number, number, number][] = [
   [185, 103, 255], // purple
@@ -235,13 +236,13 @@ function drawPlasma(
   )
 
   // Noise frequency scale — smaller values = larger, smoother blobs
-  const freqScale = 0.015
-  // Speed — how fast the noise field evolves
-  const speed = 0.4 + energy * 0.8
+  const freqScale = 0.012
+  // Speed — slow, gentle drift
+  const speed = 0.15 + energy * 0.15
   const t = time * speed
 
-  // Base amplitude + energy-driven boost (matches Nucleus approach)
-  const baseAmp = 2 + energy * 8
+  // Subtle displacement — gentle wave, not chaotic
+  const baseAmp = 1 + energy * 3
 
   // Displace each point with multi-octave noise + spatial variation
   const displaced: { x: number; y: number; intensity: number }[] = []
@@ -279,12 +280,12 @@ function drawPlasma(
   grad.addColorStop(0.75, '#ff71ce')
   grad.addColorStop(1, '#b967ff')
 
-  // 4 glow layers: diffuse outer → sharp inner
+  // Subtle glow layers — soft presence, not distracting
   const layers = [
-    { blur: 32, width: 1.0, alpha: 0.15 },  // outer haze
-    { blur: 18, width: 1.5, alpha: 0.25 },  // mid glow
-    { blur: 8,  width: 2.0, alpha: 0.4 },   // inner glow
-    { blur: 2,  width: 2.5, alpha: 0.9 },   // sharp core
+    { blur: 20, width: 0.8, alpha: 0.08 },  // faint outer haze
+    { blur: 10, width: 1.0, alpha: 0.12 },  // soft mid glow
+    { blur: 4,  width: 1.2, alpha: 0.2 },   // inner glow
+    { blur: 1,  width: 1.5, alpha: 0.5 },   // thin core
   ]
 
   for (let li = 0; li < layers.length; li++) {
@@ -331,6 +332,7 @@ export function ProjectList() {
   const sizesRef = useRef<{ w: number; h: number }[]>([])
   const scrollAccum = useRef(0)
   const energyRef = useRef(0)
+  const visibleRef = useRef<Set<number>>(new Set())
 
   useEffect(() => {
     const grid = gridRef.current
@@ -371,29 +373,55 @@ export function ProjectList() {
     const resizeObserver = new ResizeObserver(updateSizes)
     resizeObserver.observe(grid)
 
-    // Scroll velocity → energy (like Nucleus uses mouse velocity)
+    // Track which cards are in the viewport — skip offscreen ones
+    const cardObservers: IntersectionObserver[] = []
+    for (let i = 0; i < canvasRefs.current.length; i++) {
+      const card = canvasRefs.current[i]?.parentElement
+      if (!card) continue
+      const idx = i
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) visibleRef.current.add(idx)
+          else visibleRef.current.delete(idx)
+        },
+        { threshold: 0 }
+      )
+      observer.observe(card)
+      cardObservers.push(observer)
+    }
+
+    // Gentle scroll reactivity — subtle bump, not dramatic
     const onScroll = () => {
-      scrollAccum.current += 12
+      scrollAccum.current += 4
     }
     window.addEventListener('scroll', onScroll, { passive: true })
 
-    // Animation loop
+    // Animation loop — throttled to 30fps
     let animId: number
+    let lastFrame = 0
 
     function animate(timestamp: number) {
+      // Skip frame if under interval threshold
+      if (timestamp - lastFrame < FRAME_INTERVAL) {
+        animId = requestAnimationFrame(animate)
+        return
+      }
+      lastFrame = timestamp
+
       const time = prefersReducedMotion ? 0 : timestamp * 0.001
 
-      // Scroll energy: accumulate and decay (matches Nucleus pattern)
+      // Scroll energy: gentle accumulation, fast decay
       const scrollSpeed = scrollAccum.current
       scrollAccum.current = 0
-      energyRef.current = Math.min(energyRef.current + scrollSpeed * 0.006, 1)
-      energyRef.current *= 0.97
+      energyRef.current = Math.min(energyRef.current + scrollSpeed * 0.002, 0.6)
+      energyRef.current *= 0.94
 
-      // Idle breathing — always alive (ported from Nucleus)
-      const idle = 0.4 + Math.sin(time * 0.6) * 0.08
+      // Quiet idle presence — visible but unobtrusive
+      const idle = 0.22 + Math.sin(time * 0.4) * 0.04
       const globalEnergy = Math.max(energyRef.current, idle)
 
       for (let i = 0; i < canvasRefs.current.length; i++) {
+        if (!visibleRef.current.has(i)) continue // Skip offscreen cards
         const canvas = canvasRefs.current[i]
         const size = sizesRef.current[i]
         if (!canvas || !size || size.w === 0) continue
@@ -404,7 +432,7 @@ export function ProjectList() {
 
         // Per-card phase offset so they don't breathe in sync
         const cardPhase = i * 0.7
-        const cardBreath = Math.sin(time * 0.8 + cardPhase) * 0.06
+        const cardBreath = Math.sin(time * 0.5 + cardPhase) * 0.03
         const cardEnergy = Math.min(globalEnergy + cardBreath, 1)
 
         drawPlasma(ctx, size.w, size.h, cardEnergy, time + cardPhase, i)
@@ -417,6 +445,7 @@ export function ProjectList() {
 
     return () => {
       resizeObserver.disconnect()
+      cardObservers.forEach((o) => o.disconnect())
       cancelAnimationFrame(animId)
       window.removeEventListener('scroll', onScroll)
     }

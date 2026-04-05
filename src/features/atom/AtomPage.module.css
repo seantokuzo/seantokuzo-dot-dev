@@ -9,7 +9,7 @@
 /* --- View Switch (list view only — top center) --- */
 .viewSwitchTop {
   position: absolute;
-  top: calc(var(--nav-height) + var(--space-md));
+  top: calc(var(--nav-height) + var(--space-3xl) + var(--text-3xl) + var(--space-md));
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
