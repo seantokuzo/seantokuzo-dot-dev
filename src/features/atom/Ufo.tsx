@@ -1,21 +1,45 @@
 import { useRef, useMemo, useEffect } from 'react'
-import { useFrame } from '@react-three/fiber'
+import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 
 interface UfoProps {
   onComplete: () => void
   onProgress?: (t: number) => void
+  screenOrigin?: { x: number; y: number } | null
 }
 
 const FLIGHT_DURATION = 3.2
 
-export function Ufo({ onComplete, onProgress }: UfoProps) {
+/**
+ * Convert screen pixel coordinates to a 3D world position
+ * at a given distance along the camera's view ray.
+ */
+function screenToWorld(
+  screenX: number,
+  screenY: number,
+  camera: THREE.Camera,
+  depth: number
+): THREE.Vector3 {
+  const ndc = new THREE.Vector3(
+    (screenX / window.innerWidth) * 2 - 1,
+    -(screenY / window.innerHeight) * 2 + 1,
+    0.5
+  )
+  ndc.unproject(camera)
+  const dir = ndc.sub(camera.position).normalize()
+  return camera.position.clone().add(dir.multiplyScalar(depth))
+}
+
+export function Ufo({ onComplete, onProgress, screenOrigin }: UfoProps) {
   const groupRef = useRef<THREE.Group>(null)
   const startTime = useRef(-1)
   const completedRef = useRef(false)
   const lightRef = useRef<THREE.PointLight>(null)
+  const curveRef = useRef<THREE.CatmullRomCurve3 | null>(null)
+  const { camera } = useThree()
 
-  const curve = useMemo(
+  // Build curve on first render — uses camera to unproject screen origin
+  const defaultCurve = useMemo(
     () =>
       new THREE.CatmullRomCurve3(
         [
@@ -60,7 +84,30 @@ export function Ufo({ onComplete, onProgress }: UfoProps) {
 
     if (startTime.current < 0) {
       startTime.current = state.clock.elapsedTime
+
+      // Build curve from screen origin on first frame
+      if (screenOrigin) {
+        const startPos = screenToWorld(screenOrigin.x, screenOrigin.y, camera, 5)
+        curveRef.current = new THREE.CatmullRomCurve3(
+          [
+            startPos,
+            new THREE.Vector3(startPos.x * 0.5 + 1.5, startPos.y * 0.3 + 2, 2.5),
+            new THREE.Vector3(3, 3, 0.5),
+            new THREE.Vector3(2.2, 3, -2),
+            new THREE.Vector3(0, 3, -3),
+            new THREE.Vector3(-2.2, 2, -2),
+            new THREE.Vector3(-1.5, 1, 0.5),
+            new THREE.Vector3(-0.5, 0.3, 0.3),
+            new THREE.Vector3(0, 0, 0),
+          ],
+          false,
+          'catmullrom',
+          0.5
+        )
+      }
     }
+
+    const curve = curveRef.current ?? defaultCurve
 
     const elapsed = state.clock.elapsedTime - startTime.current
     const raw = Math.min(elapsed / FLIGHT_DURATION, 1)

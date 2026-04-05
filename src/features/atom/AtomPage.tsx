@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useIsMobile } from '../../hooks/useMediaQuery'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useGestureControls } from '../../hooks/useGestureControls'
@@ -10,7 +10,7 @@ import { projects } from '../../data/projects'
 import styles from './AtomPage.module.css'
 
 export function AtomPage() {
-  useDocumentTitle('Sean Simpson — seantokuzo.dev')
+  useDocumentTitle('Projects — seantokuzo.dev')
   const isMobile = useIsMobile()
   const {
     sceneRef,
@@ -22,17 +22,7 @@ export function AtomPage() {
     canRender3D,
     hasCamera,
     isLanding,
-    triggerUfo,
   } = useAtomContext()
-
-  const [ctaFading, setCtaFading] = useState(false)
-  const ctaTimerRef = useRef<ReturnType<typeof setTimeout>>(null)
-
-  useEffect(() => {
-    return () => {
-      if (ctaTimerRef.current) clearTimeout(ctaTimerRef.current)
-    }
-  }, [])
 
   // CV gesture controls — desktop only, 3D view only
   const gestureOptions = useMemo(
@@ -40,11 +30,6 @@ export function AtomPage() {
     [setOrbitPaused]
   )
   useGestureControls(gestureOptions)
-
-  const handleCtaClick = useCallback(() => {
-    setCtaFading(true)
-    ctaTimerRef.current = setTimeout(() => triggerUfo(), 250)
-  }, [triggerUfo])
 
   // Stepper callbacks
   const handleExplore = useCallback(() => {
@@ -71,7 +56,7 @@ export function AtomPage() {
     sceneRef.current?.requestClose()
   }, [sceneRef])
 
-  // List view: standard scrollable page
+  // List view fallback: standard scrollable page
   if (!canRender3D || viewMode === 'list') {
     return (
       <div className={`${styles.page} ${styles.listMode}`}>
@@ -96,36 +81,8 @@ export function AtomPage() {
   // 3D view: overlay controls on top of persistent canvas
   return (
     <div className={styles.page}>
-      <div
-        className={`${styles.heroText} ${sceneFocused ? styles.heroHidden : ''}`}
-      >
-        <h1 className={styles.title}>Sean Simpson</h1>
-        <p className={styles.subtitle}>
-          Full-Stack Developer · Creative Technologist
-        </p>
-      </div>
-
-      {/* UFO CTA — visible during landing, hidden when focused on a project */}
-      {isLanding && !sceneFocused && (
-        <div className={`${styles.ctaWrap} ${ctaFading ? styles.ctaFading : ''}`}>
-          <p className={styles.ctaLabel}>Curious what I&rsquo;m building?</p>
-          <button
-            type="button"
-            className={styles.ctaButton}
-            onClick={handleCtaClick}
-            disabled={ctaFading}
-            aria-label="Launch UFO to explore projects"
-          >
-            <span className={styles.ctaIcon} aria-hidden="true">
-              🛸
-            </span>
-            See my projects
-          </button>
-        </div>
-      )}
-
-      {/* Project controls — visible after landing or when focused on a project */}
-      {(!isLanding || sceneFocused) && (
+      {/* Project controls — hidden while UFO is flying (isLanding) */}
+      {!isLanding && (
         <div className={styles.bottomControls}>
           <ProjectStepper
             focusedProject={focusedProject}

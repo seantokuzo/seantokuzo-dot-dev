@@ -23,6 +23,7 @@ interface ProjectOrbProps {
   onCardExitComplete: () => void
   isMobile?: boolean
   orbitPaused?: boolean
+  showLabel?: boolean
 }
 
 const ORB_RADIUS = 0.18
@@ -92,6 +93,7 @@ export function ProjectOrb({
   onCardExitComplete,
   isMobile = false,
   orbitPaused = false,
+  showLabel = true,
 }: ProjectOrbProps) {
   const groupRef = useRef<Group>(null)
   const trailRef = useRef<THREE.InstancedMesh>(null)
@@ -245,8 +247,8 @@ export function ProjectOrb({
           />
         </mesh>
 
-        {/* Telemetry label — hidden when project card is visible */}
-        {!showCard && (
+        {/* Telemetry label — hidden in home mode or when project card is visible */}
+        {showLabel && !showCard && (
           <Html position={[0.35, 0.15, 0]} center={false} zIndexRange={[50, 0]}>
             <button
               type="button"

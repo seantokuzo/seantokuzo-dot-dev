@@ -2,7 +2,7 @@ import { createContext, useContext, type RefObject } from 'react'
 import type { AtomSceneHandle } from './AtomScene'
 import type { Project } from '../../data/projects'
 
-export type AtomMode = 'full' | 'ambient' | 'hidden'
+export type AtomMode = 'home' | 'projects' | 'ambient' | 'hidden'
 export type ViewMode = 'atom' | 'list'
 
 interface AtomContextValue {
@@ -17,7 +17,7 @@ interface AtomContextValue {
   canRender3D: boolean
   hasCamera: boolean
   isLanding: boolean
-  triggerUfo: () => void
+  triggerUfo: (screenOrigin?: { x: number; y: number }) => void
 }
 
 const AtomContext = createContext<AtomContextValue | null>(null)

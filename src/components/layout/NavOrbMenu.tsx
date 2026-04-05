@@ -10,6 +10,7 @@ export type OrbMenuPhase = 'closed' | 'entering' | 'open' | 'exiting'
 
 const NAV_ITEMS = [
   { to: '/', label: 'Home', color: '#c084fc' },
+  { to: '/projects', label: 'Projects', color: '#818cf8' },
   { to: '/about', label: 'About', color: '#a78bfa' },
 ]
 

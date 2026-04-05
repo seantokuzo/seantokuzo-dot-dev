@@ -22,21 +22,23 @@ export function PageShell() {
   const [viewMode, setViewMode] = useState<ViewMode>('atom')
   const [orbitPaused, setOrbitPaused] = useState(false)
 
-  const [isLanding, setIsLanding] = useState(true)
+  const [isLanding, setIsLanding] = useState(false)
   const canRender3D = hasWebGL2
 
-  const triggerUfo = useCallback(() => {
-    sceneRef.current?.startUfo(() => setIsLanding(false))
+  const triggerUfo = useCallback((screenOrigin?: { x: number; y: number }) => {
+    setIsLanding(true)
+    sceneRef.current?.startUfo(() => setIsLanding(false), screenOrigin)
   }, [])
 
   const atomMode: AtomMode = useMemo(() => {
     if (location.pathname === '/world') return 'hidden'
-    if (location.pathname === '/') return 'full'
+    if (location.pathname === '/') return 'home'
+    if (location.pathname === '/projects') return 'projects'
     return 'ambient'
   }, [location.pathname])
 
   // Canvas with delayed unmount for fade-out during route transitions
-  const wantsCanvas = atomMode === 'full' && canRender3D && viewMode === 'atom'
+  const wantsCanvas = canRender3D && (atomMode === 'home' || (atomMode === 'projects' && viewMode === 'atom'))
   const [canvasMounted, setCanvasMounted] = useState(wantsCanvas)
   const [canvasFading, setCanvasFading] = useState(false)
 
@@ -54,14 +56,19 @@ export function PageShell() {
     }
   }, [wantsCanvas])
 
-  // Reset scene state when leaving the atom page
+  // Reset scene state when leaving atom views
   useEffect(() => {
-    if (!wantsCanvas) {
+    if (atomMode === 'home') {
+      setViewMode('atom')
+      setFocusedProject(null)
+      setSceneFocused(false)
+      setOrbitPaused(false)
+    } else if (atomMode !== 'projects') {
       setFocusedProject(null)
       setSceneFocused(false)
       setOrbitPaused(false)
     }
-  }, [wantsCanvas])
+  }, [atomMode])
 
   const ctxValue = useMemo(() => ({
     sceneRef,
@@ -84,10 +91,11 @@ export function PageShell() {
         <Nav />
         {canvasMounted && (
           <div
-            className={`${styles.canvasLayer} ${canvasFading ? styles.canvasFading : ''}`}
+            className={`${styles.canvasLayer} ${atomMode === 'home' ? styles.canvasHome : ''} ${canvasFading ? styles.canvasFading : ''}`}
           >
             <AtomScene
               ref={sceneRef}
+              atomMode={atomMode}
               orbitPaused={orbitPaused}
               isMobile={isMobile}
               isTablet={isTablet && !isMobile}
