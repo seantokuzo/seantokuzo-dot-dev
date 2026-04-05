@@ -1,138 +1,116 @@
-import { useState, useCallback, useMemo, useRef } from 'react'
-import { useIsMobile, useIsTablet } from '../../hooks/useMediaQuery'
-import { useDeviceCapabilities } from '../../hooks/useDeviceCapabilities'
+import { useMemo, useCallback } from 'react'
+import { useIsMobile } from '../../hooks/useMediaQuery'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useGestureControls } from '../../hooks/useGestureControls'
-import { AtomScene, type AtomSceneHandle } from './AtomScene'
+import { useAtomContext } from './AtomContext'
 import { ProjectList } from './ProjectList'
 import { CVToggle } from './CVToggle'
 import { ProjectStepper } from './ProjectStepper'
-import { projects, type Project } from '../../data/projects'
+import { projects } from '../../data/projects'
 import styles from './AtomPage.module.css'
-
-type ViewMode = 'atom' | 'list'
 
 export function AtomPage() {
   useDocumentTitle('Sean Simpson — seantokuzo.dev')
   const isMobile = useIsMobile()
-  const isTablet = useIsTablet()
-  const { hasWebGL2, hasCamera } = useDeviceCapabilities()
-  const canRender3D = hasWebGL2
-
-  const [viewMode, setViewMode] = useState<ViewMode>(
-    canRender3D ? 'atom' : 'list'
-  )
-  const [orbitPaused, setOrbitPaused] = useState(false)
-  // Track whether the 3D scene is focused on an electron
-  const [sceneFocused, setSceneFocused] = useState(false)
-  const sceneRef = useRef<AtomSceneHandle>(null)
-  const [focusedProject, setFocusedProject] = useState<Project | null>(null)
+  const {
+    sceneRef,
+    viewMode,
+    setViewMode,
+    setOrbitPaused,
+    focusedProject,
+    sceneFocused,
+    canRender3D,
+    hasCamera,
+  } = useAtomContext()
 
   // CV gesture controls — desktop only, 3D view only
   const gestureOptions = useMemo(
-    () => ({
-      onPauseOrbit: setOrbitPaused,
-    }),
+    () => ({ onPauseOrbit: setOrbitPaused }),
     [setOrbitPaused]
   )
   useGestureControls(gestureOptions)
 
-  // Stepper callbacks (mobile only)
+  // Stepper callbacks
   const handleExplore = useCallback(() => {
     sceneRef.current?.focusProject(projects[0])
-  }, [])
+  }, [sceneRef])
 
   const handleStepNext = useCallback(() => {
     if (!focusedProject) return
     const idx = projects.findIndex((p) => p.id === focusedProject.id)
     if (idx < 0) return
-    const next = projects[(idx + 1) % projects.length]
-    sceneRef.current?.stepToProject(next)
-  }, [focusedProject])
+    sceneRef.current?.stepToProject(projects[(idx + 1) % projects.length])
+  }, [focusedProject, sceneRef])
 
   const handleStepPrev = useCallback(() => {
     if (!focusedProject) return
     const idx = projects.findIndex((p) => p.id === focusedProject.id)
     if (idx < 0) return
-    const prev = projects[(idx - 1 + projects.length) % projects.length]
-    sceneRef.current?.stepToProject(prev)
-  }, [focusedProject])
+    sceneRef.current?.stepToProject(
+      projects[(idx - 1 + projects.length) % projects.length]
+    )
+  }, [focusedProject, sceneRef])
 
   const handleStepClose = useCallback(() => {
     sceneRef.current?.requestClose()
-  }, [])
+  }, [sceneRef])
 
-  const handleFocusedProjectChange = useCallback((project: Project | null) => {
-    setFocusedProject(project)
-  }, [])
+  // List view: standard scrollable page
+  if (!canRender3D || viewMode === 'list') {
+    return (
+      <div className={`${styles.page} ${styles.listMode}`}>
+        {canRender3D && (
+          <div className={styles.viewSwitchTop}>
+            <button
+              type="button"
+              className={styles.toggle}
+              onClick={() => setViewMode('atom')}
+              aria-label="Switch to 3D view"
+            >
+              ⚛ 3D View
+            </button>
+          </div>
+        )}
+        <div className={styles.starfieldBg} />
+        <ProjectList />
+      </div>
+    )
+  }
 
+  // 3D view: overlay controls on top of persistent canvas (rendered in PageShell)
   return (
     <div className={styles.page}>
-      {/* 3D View toggle — only shows in list view */}
-      {viewMode === 'list' && canRender3D && (
-        <div className={styles.viewSwitchTop}>
+      <div
+        className={`${styles.heroText} ${sceneFocused ? styles.heroHidden : ''}`}
+      >
+        <h1 className={styles.title}>Sean Simpson</h1>
+        <p className={styles.subtitle}>
+          Full-Stack Developer · Creative Technologist
+        </p>
+      </div>
+
+      <div className={styles.bottomControls}>
+        <ProjectStepper
+          focusedProject={focusedProject}
+          onExplore={handleExplore}
+          onNext={handleStepNext}
+          onPrev={handleStepPrev}
+          onClose={handleStepClose}
+        />
+        <div
+          className={`${styles.secondaryControls} ${sceneFocused ? styles.controlsHidden : ''}`}
+        >
           <button
             type="button"
             className={styles.toggle}
-            onClick={() => setViewMode('atom')}
-            aria-label="Switch to 3D view"
+            onClick={() => setViewMode('list')}
+            aria-label="Switch to list view"
           >
-            ⚛ 3D View
+            ☰ List View
           </button>
+          {!isMobile && hasCamera && <CVToggle />}
         </div>
-      )}
-
-      {/* Main content */}
-      {viewMode === 'atom' && canRender3D ? (
-        <div className={styles.canvasWrap}>
-          <AtomScene
-            ref={sceneRef}
-            orbitPaused={orbitPaused}
-            isMobile={isMobile}
-            isTablet={isTablet && !isMobile}
-            onFocusChange={setSceneFocused}
-            onFocusedProjectChange={handleFocusedProjectChange}
-          />
-
-          {/* Hero text — always top center */}
-          <div className={`${styles.heroText} ${sceneFocused ? styles.heroHidden : ''}`}>
-            <h1 className={styles.title}>Sean Simpson</h1>
-            <p className={styles.subtitle}>
-              Full-Stack Developer · Creative Technologist
-            </p>
-          </div>
-
-          {/* Bottom controls — all viewport sizes */}
-          <div className={styles.bottomControls}>
-            <ProjectStepper
-              focusedProject={focusedProject}
-              onExplore={handleExplore}
-              onNext={handleStepNext}
-              onPrev={handleStepPrev}
-              onClose={handleStepClose}
-            />
-            <div className={`${styles.secondaryControls} ${sceneFocused ? styles.controlsHidden : ''}`}>
-              <button
-                type="button"
-                className={styles.toggle}
-                onClick={() => setViewMode('list')}
-                aria-label="Switch to list view"
-              >
-                ☰ List View
-              </button>
-              {!isMobile && hasCamera && (
-                <CVToggle />
-              )}
-            </div>
-          </div>
-        </div>
-      ) : (
-        <>
-          <div className={styles.starfieldBg} />
-          <ProjectList />
-        </>
-      )}
-
+      </div>
     </div>
   )
 }

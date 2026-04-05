@@ -2,8 +2,12 @@
   position: relative;
   min-height: 100dvh;
   margin-top: calc(-1 * var(--nav-height));
-  display: flex;
-  flex-direction: column;
+  pointer-events: none;
+}
+
+/* --- List Mode — standard scrollable page --- */
+.listMode {
+  pointer-events: auto;
 }
 
 /* --- View Switch (list view only — top center) --- */
@@ -13,6 +17,7 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
+  pointer-events: auto;
 }
 
 /* --- Toggle Button --- */
@@ -26,6 +31,7 @@
   border-radius: var(--radius-full);
   padding: var(--space-xs) var(--space-md);
   cursor: pointer;
+  pointer-events: auto;
   transition:
     border-color var(--transition-fast),
     box-shadow var(--transition-fast);
@@ -52,6 +58,7 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-md);
+  pointer-events: auto;
 }
 
 .secondaryControls {
@@ -72,19 +79,6 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: radial-gradient(
-    ellipse at 50% 40%,
-    var(--color-starfield-core) 0%,
-    var(--color-starfield-mid) 55%,
-    var(--color-starfield-edge) 100%
-  );
-}
-
-/* --- 3D Canvas Wrapper --- */
-.canvasWrap {
-  position: relative;
-  flex: 1;
-  min-height: 100dvh;
   background: radial-gradient(
     ellipse at 50% 40%,
     var(--color-starfield-core) 0%,
